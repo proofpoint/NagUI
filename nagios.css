@@ -1,0 +1,318 @@
+/* Copyright 2010-2011 Proofpoint, Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+		body{
+			background-color:#ddd;
+		}
+ 		.pageloading
+		{
+			background-color:white;
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			padding:7px;
+			border-style: double;
+			width: 100px;
+			height: 16px;
+			margin:auto;
+		}
+ 		.dirty { background-color: #F5F6CE ;  }
+		.statusdisabled, .statusdisabled tr td  { color: #999; }
+		table.status { border: 1px solid #CCC; padding: 1px; font-size: 8pt; }
+		table.status tr td a { font-size: 8pt; }
+		table.status tr, table.status td {height:8pt; line-height:8pt;
+	        padding: 1px 2px;
+	        text-overflow:ellipsis;
+	        overflow:hidden;
+	        white-space:nowrap;
+	        }
+		.statusEven {}
+		.pp-nagios-0  .x-grid-row-focused{
+			color:#444;
+		}		
+		.pp-nagios-3 , .statusUnknown{background-color: #BF44B2; color: #FFF; padding-left:2px; padding-right:2px; }
+		.pp-nagios-2 , .statusCritical{background-color: #FF0000; color: #FFF; padding-left:2px; padding-right:2px; }
+		.pp-nagios-1 , .statusWarning{background-color: #FFCC00; color: #FFF; padding-left:2px; padding-right:2px;}
+		.pp-nagios-0, .statusOK { background-color: #00CC33; color: #FFF; padding-left:2px; padding-right:2px;}
+		.pp-nagiostext-3, a span.pp-nagiostext-3 {color: #BF44B2; font-weight:bold;}
+		.pp-nagiostext-2, a span.pp-nagiostext-2 {color: #FF0000; font-weight:bold; }
+		.pp-nagiostext-1, a span.pp-nagiostext-1 {color: #FFCC00; font-weight:bold;}
+		.pp-nagiostext-0, a span.pp-nagiostext-0 { color: #00CC33; font-weight:bold;}
+		.statusOdd {}
+		.add {
+            background-image:url('/extjs4/resources/images/default/shared/add.gif') !important;
+        }
+        .option {
+            background-image:url('/extjs4/resources/images/default/shared/plugin.gif') !important;
+        }
+        .download {
+            background-image:url('/extjs4/resources/images/default/shared/down2.gif') !important;
+        }
+        .close {
+            background-image:url('/extjs4/resources/images/default/layout/panel-close.gif') !important;
+        }
+		.x-form-search-trigger {
+		    background-image: url('/extjs4/resources/themes/images/default/form/search-trigger.gif');
+		}
+        .helpicon {
+            background-image:url('/nagui/images/help.gif') !important;
+        }
+		.helpwindow{
+			padding:15px;
+		}
+		.msg .x-box-mc {
+		    font-size:14px;
+		}
+		#msg-div {
+		    position:absolute;
+		    left:35%;
+		    top:10px;
+		    width:300px;
+		    z-index:20000;
+		}
+		#msg-div .msg {
+		    border-radius: 8px;
+		    -moz-border-radius: 8px;
+		    background: #F6F6F6;
+		    border: 2px solid #ccc;
+		    margin-top: 2px;
+		    padding: 10px 15px;
+		    color: #555;
+		}
+		#msg-div .msg h3 {
+		    margin: 0 0 8px;
+		    font-weight: bold;
+		    font-size: 13px;
+		}
+		#msg-div .msg p {
+		    margin: 0;
+		}
+		.helpwindow p{
+			padding-top:10px;
+		}
+		.helpwindow li{
+			padding-left:5px;
+			list-style: inside;
+		}
+		.none{
+			border: 0 none;
+			height: 13px;
+			margin: 0;
+			padding: 0;
+			vertical-align: middle;
+			width: 16px;
+		    background-repeat: no-repeat;
+            background-image:url('/nagui/images/notifyoff.gif') !important;
+		}
+		.pp-nagios-status {
+			height:30px;
+			font-size:8pt;	
+			//border-bottom:1px solid #222;	
+			//padding: 3 0 3 0;	
+		}
+		.pp-nagios-label {width:100px;background-color:#BBB;height:30px;font-size:8pt;}
+		.pp-nagios-output {font-size:7pt;width:100%;}
+		.x-grid3-row-body p {
+		    margin:5px 5px 10px 5px !important;
+		}
+		.ux-mselect{
+		    overflow:auto;
+		    background:white;
+		    position:relative; /* for calculating scroll offsets */
+		    zoom:1;
+		    overflow:auto;	
+		}
+		.ux-mselect-item{
+		    font:normal 12px tahoma, arial, helvetica, sans-serif;
+		    padding:2px;
+		    border:1px solid #fff;
+		    white-space: nowrap;
+		    cursor:pointer;
+		}
+		.ux-mselect-selected{
+			border:1px dotted #a3bae9 !important;
+		    background:#DFE8F6;
+		    cursor:pointer;
+		}
+
+		.x-view-drag-insert-above { 
+		    border-top:1px dotted #3366cc; 
+		} 
+		.x-view-drag-insert-below { 
+		    border-bottom:1px dotted #3366cc; 
+		}
+		/*
+		 * Ext JS Library 2.3.0
+		 * Copyright(c) 2006-2009, Ext JS, LLC.
+		 * licensing@extjs.com
+		 * 
+		 * http://extjs.com/license
+		 */
+
+		.x-column-tree .x-tree-node {
+		    zoom:1;
+		}
+		.x-column-tree .x-tree-node-el {
+		    /*border-bottom:1px solid #eee; borders? */
+		    zoom:1;
+		}
+		.x-column-tree .x-tree-selected {
+		    background: #d9e8fb;
+		}
+		.x-column-tree  .x-tree-node a {
+		    line-height:18px;
+		    vertical-align:middle;
+		}
+		.x-column-tree  .x-tree-node a span{
+
+		}
+		.x-column-tree  .x-tree-node .x-tree-selected a span{
+			background:transparent;
+			color:#000;
+		}
+		.x-tree-col {
+		    float:left;
+		    overflow:hidden;
+		    padding:0 1px;
+		    zoom:1;
+		}
+
+		.x-tree-col-text, .x-tree-hd-text {
+		    overflow:hidden;
+		    -o-text-overflow: ellipsis;
+			text-overflow: ellipsis;
+		    padding:3px 3px 3px 5px;
+		    white-space: nowrap;
+		    font:normal 11px arial, tahoma, helvetica, sans-serif;
+		}
+
+		.x-tree-headers {
+		    background: #f9f9f9 url(/extjs4/resources/images/default/grid/grid3-hrow.gif) repeat-x 0 bottom;
+			cursor:default;
+		    zoom:1;
+		}
+
+		.x-tree-hd {
+		    float:left;
+		    overflow:hidden;
+		    border-left:1px solid #eee;
+		    border-right:1px solid #d0d0d0;
+		}
+		/* loading icon */
+
+		.x-tree-host, .host{
+			background-image:url(/nagui/images/host.gif) !important;
+		}
+		.x-grid-tree-loading .x-tree-host, .x-grid-tree-loading .host,  .x-grid-tree-loading .x-tree-service,  
+		.x-grid-tree-loading .service, .x-grid-tree-loading .x-tree-group, .x-grid-tree-loading .hostgroup,  
+		.x-grid-tree-loading .meta,  .x-grid-tree-loading .x-tree-search,  .x-grid-tree-loading .x-tree-problem,
+		.x-grid-tree-loading .x-tree-ack,  .x-grid-tree-loading .x-tree-hostgroup {
+			background-image:url(/nagui/images/loading.gif) !important;
+		}
+		.x-tree-service, .service{
+			background-image:url(/nagui/images/service.gif) !important;
+		}
+		.x-tree-group,.x-tree-hostgroup,.x-tree-meta, .meta, .hostgroup{
+			background-image:url(/nagui/images/group.gif) !important;
+		}
+		.x-tree-problem{
+			background-image:url(/nagui/images/critical.png) !important;
+		}
+		.x-tree-search{
+			background-image:url(/nagui/images/search.gif) !important;
+		}
+		.x-tree-ack{
+			background-image:url(/nagui/images/ack.gif) !important;
+		}
+		.x-tree-comment{
+			background-image:url(/nagui/images/comment.gif) !important;
+		}
+		.x-tree-ndisabled{
+			background-image:url(/nagui/images/ndisabled.gif) !important;
+		}
+		.x-tree-notify{
+			background-image:url(/nagui/images/notify.gif) !important;
+		}
+		.x-tree-schedule{
+			background-image:url(/nagui/images/downtime.gif) !important;
+		}
+		.x-nagios-statuspanel{
+			padding:4px;
+			font-size:8pt;
+			display:block;
+//			height: 100% ;
+//			display: inline-block;
+			
+		}
+		.x-nagios-accessbox{
+			padding:2px;
+			font-size:8pt;
+			text-align:right;
+			background: #D0DEF0;
+		}
+		.x-nagios-statusbox{
+			padding:2px;
+			font-size:8pt;
+			background:  #D0DEF0;
+			cursor:pointer;
+			text-decoration:underline;
+		}
+		.x-nagios-statusbox:hover{
+			font-weight:bold;
+			color:blue;
+			text-decoration:underline;
+		}
+		
+		.x-nagios-titlebox{
+			padding:6px;
+			font-size:12pt;
+			background:  #D0DEF0 url(images/nagios-logo.gif) no-repeat  5px -15px;
+		} 
+		.x-tree-status{
+			border: 0 none;
+			height: 13px;
+			margin: 0;
+			padding: 0;
+			vertical-align: top;
+			width: 16px;
+		    background-repeat: no-repeat;
+		}
+		.signature{
+			font-style:italic;
+			font-size:7pt;
+		}
+		.server-info-label{
+			background: #D0DEF0;
+			font-size:14px;
+			text-align:right;
+			padding-top:6px;
+			color:#666;
+		}
+		.task {
+		    background-image:url(../shared/icons/fam/cog.png) !important;
+		}
+		.task-folder {
+		    background-image:url(../shared/icons/fam/folder_go.png) !important;
+		}
+		.test {
+			background-color:lightgreen;
+		}
+		.x-mask-loading div {
+		    padding:5px 10px 5px 25px;
+		    background: #fbfbfb url( 'images/loading.gif' ) no-repeat 5px 5px;
+		    line-height: 16px;
+		}

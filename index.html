@@ -1,0 +1,619 @@
+<!-- Copyright 2010-2011 Proofpoint, Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<html>
+<head>
+	<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+	<title>Ops Nagios (ext4)</title>
+	<link rel="stylesheet" type="text/css" href="/extjs4/resources/css/ext-all.css" />
+	<link rel="stylesheet" type="text/css" href="nagios.css" />
+	<link rel="stylesheet" type="text/css" href="custom.css" />
+</head>
+<body>
+<div id="loading" class="pageloading" style=""> 
+<div class="loading-indicator" style="z-index:20000;"><img src="images/loading.gif" style="width:16px;height:16px;" align="absmiddle"> Loading...</div>
+</div> 
+
+<script type="text/javascript" src="/extjs4/bootstrap.js"></script>
+<script type="text/javascript" src="lib/Nagios.js"></script>
+<script type="text/javascript" src="nagiosnew.js"></script>
+<script type="text/javascript" src="lib/NagiosStore.js"></script>
+<script type="text/javascript" src="lib/NagiosContextMenu.js"></script>
+<script type="text/javascript" src="lib/NagiosTree.js"></script>
+<script type="text/javascript" src="lib/NagiosViews.js"></script>
+<script type="text/javascript" src="lib/NagiosActions.js"></script>
+<script type="text/javascript" src="lib/NagiosLogGrid.js"></script>
+
+
+<script>
+Ext.require([
+    'Ext.data.*',
+    'Ext.grid.*',
+    'Ext.tree.*',
+    'Ext.state.*',
+	'Ext.util.Filter'
+]);
+
+
+// Load the user info syncronously
+var userquery= 'GET contacts|Columns: can_submit_commands email alias name pager in_service_notification_period host_notification_period service_notification_period in_host_notification_period host_notifications_enabled service_notifications_enabled |Filter: name = USERNAME';
+
+var url=NagUI.url +'?query=' + userquery,
+fileName = url.split('/').pop(),
+xhr, status, onScriptError;
+
+if (typeof XMLHttpRequest !== 'undefined') {
+    xhr = new XMLHttpRequest();
+} else {
+    xhr = new ActiveXObject('Microsoft.XMLHTTP');
+}
+
+xhr.open('GET', url, false);
+xhr.send(null);
+
+status = (xhr.status === 1223) ? 204 : xhr.status;
+
+if (status >= 200 && status < 300) {
+    
+	var data=Ext.decode(xhr.responseText);
+	if(data[0].can_submit_commands)
+	{
+		NagUI.username=data[0].name;
+		NagUI.nagios_write=true;
+	}
+	var useraccesshtml='Username: ' + data[0].name +'<br/>Can Submit Commands: ' + NagUI.nagios_write;
+}
+else {
+    onError.call(this, "Failed loading user info via XHR: '" + url + "'; " +
+                       "XHR status code: " + status);
+}
+// done getting user info
+
+function lkupEnv(n)
+{
+	if(n.length>0)
+	{
+		n=n[0];
+	}
+	var env={
+		Archiving:'Archiving',
+		POD:'POD',
+		EDN:'EDN',
+		Core:'Core',
+		Eng: 'Eng'
+	}
+	var rtn;
+	var groups=n.data.nagios_type=='host' ? n.data.groups : n.data.host_groups;
+	if(groups.length>0)
+	{
+		Ext.each(groups,function(i){
+			if(typeof env[i] !='undefined')
+			{
+				rtn=env[i];
+			}
+		});
+	}
+	return rtn;
+}
+
+Ext.onReady(function(){
+	Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+	Ext.get('loading').destroy();
+	Ext.define('peer_names',{
+		extend: 'Ext.data.Model',
+		idProperty: 'peer_name',
+		fields: ['host_checks','obsess_over_services','last_command_check','connections','nagios_pid','execute_host_checks','enable_notifications','accept_passive_host_checks','neb_callbacks_rate','peer_name','log_messages_rate','enable_flap_detection','process_performance_data','forks','program_start','interval_length','program_version','obsess_over_hosts','enable_event_handlers','check_service_freshness','check_host_freshness','cached_log_messages','last_log_rotation','service_checks','accept_passive_service_checks','forks_rate','service_checks_rate','execute_service_checks','host_checks_rate','connections_rate','log_messages','hosts_active','requests','neb_callbacks','livestatus_version','check_external_commands','services_active','services_passive','requests_rate']
+	});
+	NagUI.nagiosServers=new Ext.data.Store({
+		proxy:{
+			type: 'ajax',
+			url: NagUI.url+'?query=GET status',			
+		},
+		root: '',
+		model: 'peer_names',
+		id: 'peer_name'
+	});	
+		
+	window.nag_tree=new Ext.tree.NagiosTree({
+		statefulNodes:false,
+		id: 'nag_tree',
+		listeners:{
+			'itemclick': updateNagiosInfoPanel,
+		},
+		store:new Ext.data.NagiosStore({
+			root: {
+				loaded:true,
+				expanded:true
+			},
+			customHostFilters:['Filter: name != dummy-host-all-services'],
+			customServiceFilters:['Filter: host_name !~ dummy-host-all-services']
+		}),
+		multiSelect: true,
+		viewConfig: {
+			animate: false,
+            plugins: {
+                ptype: 'treeviewdragdrop',
+				ddGroup: 'nagiosDD',
+                enableDrop: false
+            }
+        },
+		tbar: [
+			new Ext.button.Split({
+				text: 'Refresh',
+				// id: 'views_refresh',
+				handler:function()
+				{
+					var tree=this.up('nagiostree') || Ext.getCmp('nagios_views').getActiveTab();
+					tree.refresh();
+				},
+				iconCls: 'x-tbar-loading',
+				menu: {
+					items:[
+						{text: '<i>auto refresh at:</i>'},
+						{checked:false,text: '30 seconds',time:'30',handler:function(i){toggleAutoRefresh(i,nag_tree)},hideOnClick:true},
+						{checked:false,text: '1 min',time: '60',handler:function(i){toggleAutoRefresh(i,nag_tree)},hideOnClick:true},
+						{checked:false,text: '5 min',time: '300',handler:function(i){toggleAutoRefresh(i,nag_tree)},hideOnClick:true}
+					]
+				}
+			}),
+			{
+				text:'Actions',
+				menu:{
+					items:[
+						{
+							text: 'New Custom View',
+							handler: addCustomView,
+							menu:{
+								items:[
+									{
+										text: 'from Checked Items',
+										handler: function(){
+											var newviewroot=addCustomView().store.getRootNode();
+											Ext.each(nag_tree.getChecked(),function(i){
+												var a=i.copy();
+												a.expanded=false;
+												newviewroot.appendChild(a);
+												return;
+											});
+										}
+									}
+								]
+							}
+						},
+						{
+							style: 'font-style:italic',
+							text: 'applies to checked items'
+						},
+						{	
+							iconCls:'x-tree-refresh',
+							text: 'Re-Check',
+							handler: function(){
+								var nodes=nag_tree.getChecked();
+								if(nodes.length>0)
+								{
+									scheduleRecheck(nodes);
+								}
+							}
+						},
+						{	
+							id:'batch_ack',
+							iconCls:'x-tree-ack',
+							text: 'Acknowledge',
+							handler:function(b,e){
+								var nodes=nag_tree.getChecked();
+								if(nodes.length>0)
+								{
+									ackWindow(nodes);
+								}
+							}
+						},
+						{	
+							id:'batch_enablealerts',
+							iconCls:'x-tree-notify',
+							text: 'Enable Alerts',
+							handler:function(){
+								var nodes=nag_tree.getChecked();
+								if(nodes.length>0)
+								{
+									toggleAlerts(nodes,'ENABLE');
+								}
+							}
+
+						},
+
+						{	
+							id:'batch_disablealerts',
+							iconCls:'x-tree-ndisabled',
+							text: 'Disable Alerts',
+							handler:function(){
+								var nodes=nag_tree.getChecked();
+								if(nodes.length>0)
+								{
+									toggleAlerts(nodes,'DISABLE');
+								}
+							}
+						},
+						{	
+							id:'batch_schedule',
+							iconCls:'x-tree-schedule',
+							text: 'Schedule Downtime',
+							handler:function(){
+								var nodes=nag_tree.getChecked();
+								if(nodes.length>0)
+								{
+									scheduleDowntimeWindow(nodes);
+								}
+							}
+						},
+						{	
+							id:'batch_removedowntime',
+							iconCls:'x-tree-schedule',
+							text: 'Remove Downtime',
+							handler:function(){
+								var nodes=nag_tree.getChecked();
+								if(nodes.length>0)
+								{
+									removeDowntime(nodes);
+								}
+							}
+						},
+						{	
+							id:'batch-comment',
+							iconCls:'x-tree-comment',
+							text: 'Add Comment',
+							handler:function(){
+								var nodes=nag_tree.getChecked();
+								if(nodes.length>0)
+								{
+									commentWindow(nodes);
+								}
+							}
+						}
+					]  //end menu items
+				}
+			} // end menu
+		] // tbar
+	});
+	new Ext.container.Viewport({
+		layout: 'border',
+		id: 'nagui_app',
+		items:[
+			{
+				xtype: 'panel',
+				region:'south',
+				layout:'border',
+				split:true,
+				activeItem:0,
+				// frame:true,
+				// baseCls:'x-nagios-statuspanel',
+				bodyStyle:'background:  #D0DEF0;padding:3px',
+				height:110,
+				border:0,
+				items:[
+					{
+						xtype:'panel',
+						region:'center',
+						id:'nagiosdetail',
+						bodyStyle:'background:  #D0DEF0;padding:3px',
+						autoScroll:true				
+					},
+					{
+						title: 'Properties',
+						xtype: 'propertygrid',
+						region:'east',
+						collapsed:true,
+						collapsible:true,
+						titleCollapse:true,
+						// collapseMode: 'header',
+						hideCollapseTool:true,
+						preventHeader:true,
+						hideHeaders:true,
+						source:{},
+						width:500,
+						split:false,
+						nameColumnWidth: 200,
+						stateful:false,
+						id: 'nagiosdetaildata',
+						listeners:{
+							'show':function() {
+								console.log('show');
+								console.log(arguments);
+							},
+							'beforeshow':function() {
+								console.log('beforeshow');
+								console.log(arguments);
+							},
+							'beforeexpand':function() {
+								console.log('expand');
+								console.log(arguments);
+							},
+							'enable':function() {
+								console.log('enable');
+								console.log(arguments);
+							}
+
+
+						}							
+					}
+				]
+			},	
+			{
+				xtype:'panel',
+				region:'north',
+				height:32,
+				layout:'column',
+				items:[
+					{
+						xtype:'panel',
+						columnWidth:0.3,
+						html:'',
+						frame:false,
+						baseCls:'x-nagios-titlebox',
+						height:32
+					},
+					{
+						xtype: 'panel',
+						baseCls: 'server-info-label',
+						html: 'Server Info:',
+						columnWidth:0.1,
+						border:0,
+						height:32
+					},
+					{
+						xtype: 'panel',
+						layout:'fit',
+						baseCls:'x-nagios-statusbox',
+						id: 'statusbox',
+						html:'&nbsp;<br>&nbsp;',
+						border:0,
+						bodyStyle:'height:100%',
+						columnWidth:0.3,
+						listeners: {
+							render: function(c) {
+								c.getEl().on('click', function() { NagUI.nagiosServerStatusWindow(); });
+							}
+						}
+					},
+					{
+						xtype:'panel',
+						columnWidth:0.3,
+						border:0,
+						bodyStyle:'height:100%',
+						id:'accessbox',
+						html: useraccesshtml,
+						baseCls:'x-nagios-accessbox'
+					}
+				]
+			},
+			{
+				region: 'center',
+				xtype:'panel',
+				title: "Nagios Monitoring",
+				layout:'fit',
+				items:{
+					xtype: 'nagiosviews',
+					stateful:true,
+					stateId:'nagios_views',
+					layout:'fit',
+					id: 'nagios_views',
+					items:[
+						new Ext.tree.NagiosTree({
+							title:'Search',
+							id: 'nagios_search',
+							stateful:false,
+							listeners:{
+								'itemclick': updateNagiosInfoPanel,
+							},
+							viewConfig: {
+								animate: false,
+					            plugins: {
+					                ptype: 'treeviewdragdrop',
+									ddGroup: 'nagiosDD',
+									allowContainerDrop: true,
+					                enableDrop: false
+					            }
+					        },
+							rootVisible:true,
+							store:new Ext.data.NagiosStore({
+								root: {
+									loaded:true,
+									expanded:true,
+									text: 'Search',
+									iconCls:'x-tree-search',
+									meta: 1						
+								},
+								customHostFilters:['Filter: name != dummy-host-all-services'],
+								customServiceFilters:['Filter: host_name !~ dummy-host-all-services']
+							})
+						})
+					]
+				}
+			},
+			{
+				xtype:'panel',
+				stateful:true,
+				id:'configpanel',
+				title:'NagiosBrowser',
+				region: 'west',
+				layout:'fit',
+				collapsible:true,
+				collapsed: false,
+				width: 450,
+				title: 'Nagios Browser',
+				split: true,
+				items:[nag_tree]	
+			}
+		]
+	});
+
+	nag_tree.store.getRootNode().appendChild([
+		{
+			text:'Unhandled Host Problems',
+			meta: 1,
+			iconCls:'x-tree-problem',
+			parms:{
+				groupby:'',
+				status: 'plugin_output',
+				nodetext: 'name',
+				query: 'unhandledhostproblems'
+			}
+
+		},
+		{
+			text:'Unhandled Svc Problems',
+			meta: 1,
+			iconCls:'x-tree-problem',
+			parms:{
+				groupby:'',
+				status: 'plugin_output',
+				nodetext: 'hostsvc',
+				query: 'unhandledsvcproblems'
+			}
+
+		},
+		{
+			text:'Acknowledged',
+			meta: 1,
+			iconCls:'x-tree-ack',
+			parms:{
+				groupby:'',
+				nodetext: 'hostsvc',
+				status: 'plugin_output',
+				query: 'ackedproblems'
+			}
+
+		},
+		{
+			text: 'Host Groups',
+			allowDrag:false,
+			meta: 1,
+			query: 'hostgroups'	
+		},
+		{
+			text: 'Services',
+			allowDrag:false,
+			meta: 1,
+			parms:{
+				groupby:'description',
+				nodetext: 'description',
+				query: 'services',
+				status: 'statecount'	
+			}
+		}
+	]);
+	nagiosStatus();
+	Ext.TaskManager.start({
+		run:nagiosStatus,
+		interval: 15000
+	});
+	
+	// Restore states
+	// var nag_tree_state=Ext.state.Manager.get('nagios_views');
+	// if(nag_tree_state)
+	// {
+	// 	nag_tree.applyState(nag_tree_state);
+	// }
+	window.nagiosdetail=Ext.getCmp('nagiosdetail');
+	var nagios_views_state=Ext.state.Manager.get('nagios_views');
+	if(nagios_views_state && nagios_views_state.customviews)
+	{
+		Ext.getCmp('nagios_views').applyState(nagios_views_state);
+		// for(var i=0;i<nagios_views_state.customviews;i++)
+		// {
+		// 	var newview=addCustomView();
+		// 	var newviewstate=Ext.state.Manager.get(newview.id);
+		// 	if(newviewstate)
+		// 	{
+		// 		newview.applyState(newviewstate);										
+		// 	}
+		// }
+	}							
+	Ext.tip.QuickTipManager.init();
+	// Post app setup, do things that need all the components done.
+	
+	// execute for search in url
+	
+	if(typeof window.location.search!=undefined && window.location.search.length)
+	{
+		var q={};
+		Ext.each(window.location.search.replace(/\?/,'').split(/;|&/), function(i){
+			var term=i.split('=');
+			q[term[0]]=term[1];
+		});;
+		if(typeof q.search != 'undefined')
+		{
+			Ext.getCmp('search_input').setValue(q.search);
+			nagiosSearch();
+		}
+		if(typeof q.host_query != 'undefined')
+		{
+			Ext.getCmp('search_input').setValue(q.host_query);
+			nagiosSearch();
+			
+		}
+		if(typeof q.service_query != 'undefined')
+		{
+			Ext.getCmp('search_input').setValue(q.service_query);
+			var st=Ext.getCmp('search_type');
+			st.setText('Search Services:');
+			st.searchtype=('service');
+			st.setIconCls('service');									
+			nagiosSearch();			
+		}
+		if(typeof q.hostgroup_query != 'undefined')
+		{
+			Ext.getCmp('search_input').setValue(q.hostgroup_query);
+			var st=Ext.getCmp('search_type');
+			st.setText('Search Hostgroups:');
+			st.searchtype=('hostgroup');
+			st.setIconCls('hostgroup');									
+			nagiosSearch();			
+		}
+	}
+	
+	// Hack to recalculate the property grid
+	Ext.getCmp('nagiosdetaildata').getEl().setHeight(1800)
+	
+});
+
+</script>
+<div style='display:none'>
+<div id=help>
+<p>
+The new Nagios UI bring together severial different Nagios instnace data into one single pane of glass.  There
+are 3 main use models for the UI.    
+</p>
+<ul>
+<li>Config:  left-hand pane contains are tree laying out the nagios config as a superset of all the nagios instances.
+	The config is broken apart by a pre-defined groups, and also includes a problem summary section
+</li>
+<li>Search:  the Search tab is the first selected Tab in the main (center) pane.  You can search by host or service or hostgroup.
+	Searches do a fuzzy search across name/description/IP address and check output.  You can save searches 
+	into custom views.
+</li>
+<li>Custom Views:   custom views are there to save arbitrary groups of Hostgroups, hosts and services.  The custom
+	views are saved across browser reloads (currently using cookies).   Custom views can be created by dragging
+	and dropping from the search box or from the config pane (left).   Custom views are created by using the 
+	Actions toolbar menu. Custom views can be created directly 	from a search using the sub menu item in Actions.
+</li>
+</ul>
+<p>
+Custom Views and Search tabs can be filtered by production systems, and Ok/status, or 'unhandled'.  They can also be refreshed using the toolbar button
+and auto-refreshed using the Refresh button menu
+</p>
+<p>
+</div>
+</div>
+</body>
+</html>
