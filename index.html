@@ -34,6 +34,7 @@ limitations under the License.
 <script type="text/javascript" src="lib/NagiosViews.js"></script>
 <script type="text/javascript" src="lib/NagiosActions.js"></script>
 <script type="text/javascript" src="lib/NagiosLogGrid.js"></script>
+<script type="text/javascript" src="custom.js"></script>
 
 
 <script>
@@ -44,7 +45,6 @@ Ext.require([
     'Ext.state.*',
 	'Ext.util.Filter'
 ]);
-
 
 // Load the user info syncronously
 var userquery= 'GET contacts|Columns: can_submit_commands email alias name pager in_service_notification_period host_notification_period service_notification_period in_host_notification_period host_notifications_enabled service_notifications_enabled |Filter: name = USERNAME';
@@ -493,7 +493,14 @@ Ext.onReady(function(){
 				query: 'ackedproblems'
 			}
 
-		},
+		}
+	]);
+		
+	if(NagUI.customNodes.length)
+	{
+		nag_tree.store.getRootNode().appendChild(NagUI.customNodes);		
+	}
+	nag_tree.store.getRootNode().appendChild([
 		{
 			text: 'Host Groups',
 			allowDrag:false,
