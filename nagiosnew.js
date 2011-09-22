@@ -362,7 +362,7 @@ function setNagiosInfo(node,target)
 	};
 	var query='GET ' + node.data.nagios_type + 's';
 	query+= node.data.nagios_type == 'host' ? '|Filter: name = ' + node.data.name : '';
-	query+= node.data.nagios_type == 'service' ? '|Filter: description ~ ' + node.data.description : '';
+	query+= node.data.nagios_type == 'service' ? '|Filter: description = ' + node.data.description : '';
 	query+= node.data.nagios_type == 'service' ? '|Filter: host_name = ' + node.data.host_name : '';
 	query+= node.data.nagios_type == 'hostgroup' ? '|Filter: name = ' + node.data.name : '';
 
