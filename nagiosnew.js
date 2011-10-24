@@ -56,16 +56,21 @@ NagUI.nagiosServerStatusWindow=function(config){
 		success: function(r,o){
 			var stats=Ext.decode(r.responseText);
 			Ext.each(stats,function(i){
-				Ext.apply(NagUI.nagiosServers.getById(i.peer_name).data,i);
+				var peer=NagUI.nagiosServers.getById(i.peer_name);
+				if(peer)
+				{
+					Ext.apply(NagUI.nagiosServers.getById(i.peer_name).data,i);
+				}
 			});
 			t.removeAll(true);
 			NagUI.nagiosServers.each(function(i){
 				NagUI.log(i.data);
-				t.add(
+				var newc=t.add(
 					{
 						xtype: 'panel',
 						layout: 'border',
 						title: i.get('peer_name'),
+						iconCls: (i.data.error_code ? 'x-tree-problem' : undefined),
 						items:[
 							Ext.create('Ext.grid.property.Grid',{
 								region: 'center',
@@ -174,7 +179,11 @@ NagUI.nagiosServerStatusWindow=function(config){
 							})
 						]
 					}
-				);		
+				);
+				if(i.data.error_code)
+				{
+					newc.getEl().mask('Nagios Server Status error: ' + i.data.error_str);
+				}		
 			});	
 			o.window.getEl().unmask();
 			t.getActiveTab().doLayout();		
@@ -199,8 +208,13 @@ function nagiosStatus()
 			data.services_active=data.services_active+(r.get('services_active') ? r.get('services_active') : 0 );
 			data.services_passive=data.services_passive+(r.get('services_passive') ? r.get('services_passive') : 0 );
 		});
-		var str='Hosts (active/passive): ' + data.hosts_active + " / " + data.hosts_passive;
-		str+='<br/>Services (active/passive): ' + data.services_active + ' / ' + data.services_passive;
+		var str='';
+		if(typeof (NagUI.nagiosServers.sum('error_code') * 1) == 'number' && (NagUI.nagiosServers.sum('error_code') * 1) > 0)
+		{
+			str+=' <div class=x-nagios-status-error data-qtip:"There were error(s) retrieving nagios server info"> !!! </div> ';
+		}
+		str+='<div>Hosts (active/passive): ' + data.hosts_active + " / " + data.hosts_passive;
+		str+='<br/>Services (active/passive): ' + data.services_active + ' / ' + data.services_passive + '</div>';
 		Ext.getCmp('statusbox').getEl().update(str);			
 		//Ext.getCmp('statusboxbutton').setText(str);			
 	}});	

@@ -44,6 +44,14 @@ limitations under the License.
 		.pp-nagios-0  .x-grid-row-focused{
 			color:#444;
 		}		
+		
+		
+		/*
+			This is because the mask msg class adds loading by default 
+		*/
+		.notloading {background-image:none;}
+
+
 		.pp-nagios-3 , .statusUnknown{background-color: #BF44B2; color: #FFF; padding-left:2px; padding-right:2px; }
 		.pp-nagios-2 , .statusCritical{background-color: #FF0000; color: #FFF; padding-left:2px; padding-right:2px; }
 		.pp-nagios-1 , .statusWarning{background-color: #FFCC00; color: #FFF; padding-left:2px; padding-right:2px;}
@@ -270,6 +278,14 @@ limitations under the License.
 			background:  #D0DEF0;
 			cursor:pointer;
 			text-decoration:underline;
+		}
+		.x-nagios-status-error{
+			float:left;
+			font-size:14pt;
+			color:red;
+			margin-left:3px;
+			margin-right:3px;
+			text-decoration:none;
 		}
 		.x-nagios-statusbox:hover{
 			font-weight:bold;

@@ -112,7 +112,7 @@ Ext.onReady(function(){
 	Ext.define('peer_names',{
 		extend: 'Ext.data.Model',
 		idProperty: 'peer_name',
-		fields: ['host_checks','obsess_over_services','last_command_check','connections','nagios_pid','execute_host_checks','enable_notifications','accept_passive_host_checks','neb_callbacks_rate','peer_name','log_messages_rate','enable_flap_detection','process_performance_data','forks','program_start','interval_length','program_version','obsess_over_hosts','enable_event_handlers','check_service_freshness','check_host_freshness','cached_log_messages','last_log_rotation','service_checks','accept_passive_service_checks','forks_rate','service_checks_rate','execute_service_checks','host_checks_rate','connections_rate','log_messages','hosts_active','requests','neb_callbacks','livestatus_version','check_external_commands','services_active','services_passive','requests_rate']
+		fields: ['host_checks','obsess_over_services','last_command_check','connections','nagios_pid','execute_host_checks','enable_notifications','accept_passive_host_checks','neb_callbacks_rate','peer_name','log_messages_rate','enable_flap_detection','process_performance_data','forks','program_start','interval_length','program_version','obsess_over_hosts','enable_event_handlers','check_service_freshness','check_host_freshness','cached_log_messages','last_log_rotation','service_checks','accept_passive_service_checks','forks_rate','service_checks_rate','execute_service_checks','host_checks_rate','connections_rate','log_messages','hosts_active','requests','neb_callbacks','livestatus_version','check_external_commands','services_active','services_passive','requests_rate','error_code','error_str']
 	});
 	NagUI.nagiosServers=new Ext.data.Store({
 		proxy:{
