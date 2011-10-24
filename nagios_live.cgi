@@ -73,7 +73,7 @@ else
 my $ml=Monitoring::Livestatus->new(
 	#name=>'multisite',
 	verbose=>0,
-	query_timeout=>4,
+	timeout=>4,
 	peer=>$peer,
 	errors_are_fatal=>0,
 	warnings=>0
@@ -99,17 +99,29 @@ if($q->param('query') eq 'GET status')
 		my $st=Monitoring::Livestatus->new(
 			name=> $_,			
 			verbose=>0,
-			query_timeout=>4,
+			timeout=>4,
 			peer=>$nagios_servers->{$_},
 			warnings=>0
 			);
-			
+		$st->errors_are_fatal(0);
 		my $res=$st->selectall_arrayref('GET status',{
 			Slice => {}, 
 			Sum => 1, 
 			Deepcopy => 1,
 			Addpeer=>1
 		});
+		# catch error and skip this iteration if connection fails
+		if($Monitoring::Livestatus::ErrorCode) {
+	        print STDERR "Livestatus Error: $Monitoring::Livestatus::ErrorMessage\n" if $DEBUG;
+			push(@$status_res,{
+				peer_name=>$_, 
+				peer_addr=>$nagios_servers->{$_},
+				error_code=>$Monitoring::Livestatus::ErrorCode,
+				error_str=>$Monitoring::Livestatus::ErrorMessage
+			});
+			next;
+	    }
+	    
 		$res->[0]->{'peer_name'}=$_;
 		my $inst_res=$res->[0];
 #		push(@$status_res,$inst_res);
