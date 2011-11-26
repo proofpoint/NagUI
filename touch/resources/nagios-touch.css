@@ -1,0 +1,139 @@
+/* `, Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+.nagios-3 , .statusUnknown{background-color: #BF44B2; color: #FFF; padding-left:0.2em; padding-right:0.2em; }
+.nagios-2 , .statusCritical{background-color: #FF0000; color: #FFF; padding-left:0.2em; padding-right:0.2em; }
+.nagios-1 , .statusWarning{background-color: #FFCC00; color: #FFF; padding-left:0.2em; padding-right:0.2em;}
+.nagios-0, .statusOK { background-color: #00CC33; color: #FFF; padding-left:0.2em; padding-right:0.2em;}
+.nagiostext-3, a span.nagiostext-3 {color: #BF44B2; font-weight:bold;}
+.nagiostext-2, a span.nagiostext-2 {color: #FF0000; font-weight:bold; }
+.nagiostext-1, a span.nagiostext-1 {color: #FFCC00; font-weight:bold;}
+.nagiostext-0, a span.nagiostext-0 { color: #00CC33; font-weight:bold;}
+.nagiosgradient-0 { background: #18D60F; }
+.nagiosgradient-1 { background: #DEF056; }
+.nagiosgradient-2 { background: #FF5852; }
+.nagiosgradient-3 { background: #C650D8; }
+/*.
+nagiosgradient-0 { background: -webkit-gradient(linear, left top, left bottom, from(#FFF), to(#00CC33)); }
+.nagiosgradient-1 { background: -webkit-gradient(linear, left top, left bottom, from(#FFF), to(#FFCC00)); }
+.nagiosgradient-2 { background: -webkit-gradient(linear, left top, left bottom, from(#FFF), to(#FF0000)); }
+.nagiosgradient-3 { background: -webkit-gradient(linear, left top, left bottom, from(#FFF), to(#BF44B2)); }
+*/
+.service-output { font-size: 10pt;
+font-weight:bold;
+ }
+
+.x-tree-host{
+	background-image:url(../../images/host.gif) !important;
+}
+.x-tree-service{
+	background-image:url(../../images/service.gif) !important;
+}
+.x-tree-group,.x-tree-hostgroup,.x-tree-meta{
+	background-image:url(../../images/group.gif) !important;
+}
+.x-tree-problem{
+	background-image:url(../../images/critical.png) !important;
+}
+.x-tree-search{
+	background-image:url(../../images/search.gif) !important;
+}
+.x-tree-ack{
+	background-image:url(../../images/ack.gif) !important;
+}
+.x-tree-comment{
+	background-image:url(../../images/comment.gif) !important;
+}
+.x-tree-ndisabled{
+	background-image:url(../../images/ndisabled.gif) !important;
+}
+.x-tree-notify{
+	background-image:url(../../images/notify.gif) !important;
+}
+.x-tree-schedule{
+	background-image:url(../../images/downtime.gif) !important;
+}
+.servicelist-item{
+	font-weight:bold;
+	
+}
+
+.serviceitem-box{
+	padding: 0.1em;
+}
+.x-list-margin-item{
+	padding-top: 0.4em;
+	padding-right: 0.7em;
+	padding-bottom: 0.4em;
+	padding-left: 0.7em;	
+}
+.x-list-marginitems .x-list-item{
+	padding-top: 0.1em;
+	padding-right: 0.1em;
+	padding-bottom: 0.1em;
+	padding-left: 0.1em;
+}
+.hostgroup-status{
+	font-size: 10pt;
+	font-weight:bold;
+	text-align: left;	
+}
+.x-tree-problem{
+	height: 13px;
+	width: 16px;
+	background-image:url(../../images/critical.png) !important;
+}
+.x-tree-search{
+	height: 13px;
+	width: 16px;
+	background-image:url(../../images/search.gif) !important;
+}
+.ack-1{
+	height: 13px;
+	width: 16px;
+	background-image:url(../../images/ack.gif) !important;
+}
+.comment-1,.comment-2,.comment-3,.comment-4,.comment-5,.comment-6,.comment-7,.comment-8,.comment-9{
+	height: 13px;
+	width: 16px;
+	background-image:url(../../images/comment.gif) !important;
+}
+.ndisabled-0, .ndisabled- {
+	height: 13px;
+	width: 16px;
+	background-image:url(../../images/ndisabled.gif) !important;
+}
+.notify-1{
+	height: 13px;
+	width: 16px;
+	background-image:url(../../images/notify.gif) !important;
+}
+.schedule-1,.schedule-2,.schedule-3,.schedule-4{
+	height: 13px;
+	width: 16px;
+	background-image:url(../../images/downtime.gif) !important;
+}
+.icon{
+	border: 0 none;
+	margin: 0;
+	padding: 0;
+	vertical-align: middle;
+    background-repeat: no-repeat;	
+}
+.none{
+	height: 13px;
+	width: 16px;
+	background-image:url('../../images/notifyoff.gif') !important;
+}

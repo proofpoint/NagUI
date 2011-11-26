@@ -1,0 +1,77 @@
+<!-- Copyright 2010-2011 Proofpoint, Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Nagios Touch</title>
+
+	 <!-- Sencha Touch CSS -->
+	 <link rel="stylesheet" href="/sencha-touch/resources/css/sencha-touch.css" type="text/css">
+
+	 <!-- Custom CSS -->
+	 <link rel="stylesheet" href="resources/nagios-touch.css" type="text/css">
+
+	 <!-- Sencha Touch JS -->
+	 <script type="text/javascript" src="/sencha-touch/sencha-touch-debug.js"></script>
+
+
+	 <script type="text/javascript" src="../lib/Nagios.js"></script>
+	 <script type="text/javascript" src="../lib/NagiosActions.js"></script>
+	 <script type="text/javascript" src="../custom.js"></script>
+
+    <div id="sencha-app"> 
+	<br>
+	<h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Authenticating...</h4>
+	
+		<!-- custom time picker -->
+		<script type="text/javascript" src="ux/TimePicker.js"></script>
+		<script type="text/javascript" src="ux/form/TimePicker.js"></script>
+		<!-- Application JS -->
+		<script type="text/javascript" src="nagios-touch.js"></script>
+
+        <!-- Place your model files here --> 
+        <div id="sencha-models"> 
+	        <script type="text/javascript" src="models/top_groups.js"></script> 
+	        <script type="text/javascript" src="models/nagios_model.js"></script> 
+
+        </div> 
+
+        <!-- Place your view files here --> 
+        <div id="sencha-views"> 
+        <script type="text/javascript" src="views/top-level.js"></script> 
+        <script type="text/javascript" src="views/nodelist.js"></script> 
+        <script type="text/javascript" src="views/header.js"></script> 
+        <script type="text/javascript" src="views/hostgroups_view.js"></script> 
+        <script type="text/javascript" src="views/hosts_view.js"></script> 
+        <script type="text/javascript" src="views/services_view.js"></script> 
+        <script type="text/javascript" src="views/ackwindow.js"></script> 
+        <script type="text/javascript" src="views/scheduleDowntime.js"></script> 
+
+        </div> 
+
+        <!-- Place your controller files here --> 
+        <div id="sencha-controllers"> 
+            <script type="text/javascript" src="controllers/overview.js"></script> 
+
+        </div> 
+    </div> 
+
+
+
+</head>
+<body></body>
+</html>
