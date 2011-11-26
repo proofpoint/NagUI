@@ -24,17 +24,7 @@ limitations under the License.
 <div id="loading" class="pageloading" style=""> 
 <div class="loading-indicator" style="z-index:20000;"><img src="images/loading.gif" style="width:16px;height:16px;" align="absmiddle"> Loading...</div>
 </div> 
-
 <script type="text/javascript" src="/extjs4/bootstrap.js"></script>
-<script type="text/javascript" src="lib/Nagios.js"></script>
-<script type="text/javascript" src="nagiosnew.js"></script>
-<script type="text/javascript" src="lib/NagiosStore.js"></script>
-<script type="text/javascript" src="lib/NagiosContextMenu.js"></script>
-<script type="text/javascript" src="lib/NagiosTree.js"></script>
-<script type="text/javascript" src="lib/NagiosViews.js"></script>
-<script type="text/javascript" src="lib/NagiosActions.js"></script>
-<script type="text/javascript" src="lib/NagiosLogGrid.js"></script>
-<script type="text/javascript" src="custom.js"></script>
 
 <script>
 Ext.require([
@@ -44,6 +34,17 @@ Ext.require([
     'Ext.state.*',
 	'Ext.util.Filter'
 ]);
+</script>
+<script type="text/javascript" src="lib/Nagios.js"></script>
+<script type="text/javascript" src="nagiosnew.js"></script>
+<script type="text/javascript" src="lib/NagiosStore.js"></script>
+<script type="text/javascript" src="lib/NagiosContextMenu.js"></script>
+<script type="text/javascript" src="lib/NagiosTree.js"></script>
+<script type="text/javascript" src="lib/NagiosViews.js"></script>
+<script type="text/javascript" src="lib/NagiosActions.js"></script>
+<script type="text/javascript" src="lib/NagiosLogGrid.js"></script>
+<script type="text/javascript" src="custom.js"></script>
+<script>
 
 // Load the user info syncronously
 var userquery= 'GET contacts|Columns: can_submit_commands email alias name pager in_service_notification_period host_notification_period service_notification_period in_host_notification_period host_notifications_enabled service_notifications_enabled |Filter: name = USERNAME';
@@ -78,33 +79,6 @@ else {
                        "XHR status code: " + status);
 }
 // done getting user info
-
-function lkupEnv(n)
-{
-	if(n.length>0)
-	{
-		n=n[0];
-	}
-	var env={
-		Archiving:'Archiving',
-		POD:'POD',
-		EDN:'EDN',
-		Core:'Core',
-		Eng: 'Eng'
-	}
-	var rtn;
-	var groups=n.data.nagios_type=='host' ? n.data.groups : n.data.host_groups;
-	if(groups.length>0)
-	{
-		Ext.each(groups,function(i){
-			if(typeof env[i] !='undefined')
-			{
-				rtn=env[i];
-			}
-		});
-	}
-	return rtn;
-}
 
 Ext.onReady(function(){
 	Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
@@ -376,7 +350,7 @@ Ext.onReady(function(){
 						id: 'statusbox',
 						html:'&nbsp;<br>&nbsp;',
 						border:0,
-						bodyStyle:'height:100%',
+						bodyStyle:'height:33;',
 						columnWidth:0.3,
 						listeners: {
 							render: function(c) {
