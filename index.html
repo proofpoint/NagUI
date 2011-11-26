@@ -34,6 +34,11 @@ Ext.require([
     'Ext.state.*',
 	'Ext.util.Filter'
 ]);
+// too many items save state otherwise
+Ext.override(Ext.AbstractComponent, { 
+    stateful: false;
+});
+
 </script>
 <script type="text/javascript" src="lib/Nagios.js"></script>
 <script type="text/javascript" src="nagiosnew.js"></script>
