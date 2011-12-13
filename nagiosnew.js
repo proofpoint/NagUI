@@ -271,6 +271,7 @@ function nagiosSearch(term,opts)
 	Ext.getCmp('nagios_views').setActiveTab(searchPanel);
 	var searchView=searchPanel.view;
 	var search=searchPanel.store.getRootNode();
+	search.data.loaded=false;
 	var type=Ext.getCmp('search_type').searchtype;
 	search.collapse();
 	Ext.fly(searchView.getNode(search)).addCls(searchView.loadingCls);
@@ -420,7 +421,7 @@ function addCustomView(name){
 	{
 		 name='View ' + views.items.getCount();
 	}
-	var newcustomview= views.add(new Ext.tree.NagiosTree({
+	var newcustomview= views.add(new NagUI.NagiosTree({
 		title: name,
 		stateId: name.replace(' ','-'),
 		allowDrop:true,
@@ -434,6 +435,7 @@ function addCustomView(name){
 		viewConfig: {
 			animate: false,
 			allowCopy: true,
+			loadMask: false,
             plugins: {
                 ptype: 'treeviewdragdrop',
 				allowContainerDrops: true,
@@ -460,7 +462,7 @@ function addCustomView(name){
 			}
 
         },
-		store:new Ext.data.NagiosStore({
+		store:new NagUI.NagiosStore({
 			root: {
 				loaded:true,
 				expanded:true,
@@ -486,6 +488,107 @@ function updateNagiosInfoPanel(view,node)
 	var nagiosdetail=Ext.getCmp('nagiosdetail');
 	setNagiosInfo(node,nagiosdetail);
 	nagiosdetail.node=node;
+}
+
+function restoreCustomViews()
+{
+	
+	var savedViews=Ext.getCmp('saved_views');
+	savedViews.suspendEvents();
+	Ext.Ajax.request({
+		url: NagUI.url + '?state=default',
+		method: 'GET',
+		success: function(r,o)
+		{
+			var views=Ext.decode(r.responseText);
+			Ext.each(views,function(i){
+				savedViews.getRootNode().childNodes[0].appendChild({
+					text: i.text,
+					viewstate: i.viewstate,
+					leaf:true
+				});
+			});
+			savedViews.resumeEvents();
+		},
+		failure: function(r,o)
+		{
+			Ext.notify.msg('Error','There was an error restoring the default saved views');
+		}
+	});
+	Ext.Ajax.request({
+		url: NagUI.url + '?state=' + NagUI.username + '_views',
+		method: 'GET',
+		success: function(r,o)
+		{
+			var views=Ext.decode(r.responseText);
+			Ext.each(views,function(i){
+				savedViews.getRootNode().childNodes[1].appendChild({
+					text: i.text,
+					viewstate: i.viewstate,
+					leaf:true
+				});
+			});
+			savedViews.resumeEvents();
+		},
+		failure: function(r,o)
+		{
+			Ext.notify.msg('Error','There was an error restoring the user saved views');
+		}
+	});
+	
+}
+
+function saveCustomView(view)
+{
+	var savedViews=Ext.getCmp('saved_views');
+	if( savedViews.getRootNode().childNodes[1].findChild('text',view.getStateId()) )
+	{
+		savedViews.getRootNode().childNodes[1].replaceChild({
+			text:view.getStateId(), 
+			viewstate: view.getState(),
+			leaf: true 
+		},savedViews.getRootNode().childNodes[1].findChild('text',view.getStateId()));
+	}
+	else
+	{
+		savedViews.getRootNode().childNodes[1].appendChild({
+			text:view.getStateId(), 
+			viewstate: view.getState(),
+			leaf:true 
+		});
+	}
+}
+
+function persistSavedViews(viewtype)
+{
+	var savedViews=[];
+	var parentNode;
+	if(viewtype!='default')
+	{
+		viewtype=NagUI.username;
+		parentNode=Ext.getCmp('saved_views').getRootNode().childNodes[1];
+	}
+	else
+	{
+		parentNode=Ext.getCmp('saved_views').getRootNode().childNodes[0];		
+	}
+	Ext.each(parentNode.childNodes,function(i){
+		savedViews.push({
+			text:i.data.text,
+			viewstate: i.data.viewstate
+		});
+	});
+	Ext.Ajax.request({
+		url: NagUI.url + '?state=' + viewtype,
+		method: 'PUT',
+		jsonData: savedViews,
+		failure: function(r,o)
+		{
+			Ext.msg.show('Error','There was an error saving the view');
+			// target.setLoading(false);
+		}
+	});
+	
 }
 
 Ext.notify = function(){

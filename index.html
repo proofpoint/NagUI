@@ -25,6 +25,7 @@ limitations under the License.
 <div class="loading-indicator" style="z-index:20000;"><img src="images/loading.gif" style="width:16px;height:16px;" align="absmiddle"> Loading...</div>
 </div> 
 <script type="text/javascript" src="/extjs4/bootstrap.js"></script>
+<script type="text/javascript" src="lib/ExtFixes.js"></script>
 
 <script>
 Ext.require([
@@ -36,7 +37,7 @@ Ext.require([
 ]);
 // too many items save state otherwise
 Ext.override(Ext.AbstractComponent, { 
-    stateful: false;
+    stateful: false
 });
 
 </script>
@@ -103,13 +104,16 @@ Ext.onReady(function(){
 		id: 'peer_name'
 	});	
 		
-	window.nag_tree=new Ext.tree.NagiosTree({
+	window.nag_tree=new NagUI.NagiosTree({
 		statefulNodes:false,
 		id: 'nag_tree',
+		title: 'Nagios Browser',
 		listeners:{
-			'itemclick': updateNagiosInfoPanel,
+			'itemclick': {
+				fn: updateNagiosInfoPanel
+			}
 		},
-		store:new Ext.data.NagiosStore({
+		store:new NagUI.NagiosStore({
 			root: {
 				loaded:true,
 				expanded:true
@@ -119,6 +123,7 @@ Ext.onReady(function(){
 		}),
 		multiSelect: true,
 		viewConfig: {
+			loadMask:false,
 			animate: false,
             plugins: {
                 ptype: 'treeviewdragdrop',
@@ -386,7 +391,7 @@ Ext.onReady(function(){
 					layout:'fit',
 					id: 'nagios_views',
 					items:[
-						new Ext.tree.NagiosTree({
+						new NagUI.NagiosTree({
 							title:'Search',
 							id: 'nagios_search',
 							stateful:false,
@@ -394,6 +399,7 @@ Ext.onReady(function(){
 								'itemclick': updateNagiosInfoPanel,
 							},
 							viewConfig: {
+								loadMask: false,
 								animate: false,
 					            plugins: {
 					                ptype: 'treeviewdragdrop',
@@ -403,7 +409,7 @@ Ext.onReady(function(){
 					            }
 					        },
 							rootVisible:true,
-							store:new Ext.data.NagiosStore({
+							store:new NagUI.NagiosStore({
 								root: {
 									loaded:true,
 									expanded:true,
@@ -422,15 +428,134 @@ Ext.onReady(function(){
 				xtype:'panel',
 				stateful:true,
 				id:'configpanel',
-				title:'NagiosBrowser',
 				region: 'west',
-				layout:'fit',
+				layout:'accordion',
+				stateful: true,
 				collapsible:true,
 				collapsed: false,
 				width: 450,
-				title: 'Nagios Browser',
+				// title: 'Nagios Browser',
 				split: true,
-				items:[nag_tree]	
+				items:[
+					nag_tree,
+
+// SAVED VIEWS.  should this be another class? probably
+					{
+						title: 'Saved Views',
+						xtype: 'treepanel',
+						id: 'saved_views',
+				        viewConfig: {
+				            plugins: {
+				                ptype: 'treeviewdragdrop',
+								ddGroup: 'saved_viewsDD'
+				            }
+				        },
+						bbar:[
+							{xtype:'tbfill'},
+							{
+								id: 'deletezone',
+								text: 'Drag to reorder'
+							},
+							{xtype:'tbfill'}
+						],
+						store: new Ext.data.TreeStore({
+							root: {
+								expanded: true,
+								allowDrop: false,
+								children: [
+									{
+										text: 'Shared Views',
+										leaf: false,
+										allowDrop: true,
+										expanded: true,
+										children: []
+									},
+									{
+										text: NagUI.username + '-Views',
+										leaf: false,
+										allowDrop: true,
+										expanded: true,
+										children: []
+									}
+								]
+							}
+						}),
+						rootVisible: false,
+						listeners:{
+							itemclick: {
+								fn: function(view,rec,item){
+									if(rec.data.leaf)
+									{
+										var viewLkup = Ext.getCmp('nagios_views').items.findIndex('stateId',rec.data.text);
+										if( viewLkup >= 0)
+										{
+											Ext.getCmp('nagios_views').setActiveTab(viewLkup);
+										}
+										else
+										{
+											var newview=addCustomView(rec.data.text);
+											newview.applyState(rec.data.viewstate);
+										}
+									}
+								}
+							},
+							itemappend:{
+								fn: function(parentnode,newnode){
+									persistSavedViews('default');
+									persistSavedViews();
+									Ext.notify.msg('Success','Views saved');
+								}
+							},
+							itemremove:{
+								fn: function(parentnode,newnode){
+									persistSavedViews('default');
+									persistSavedViews();
+								}
+							},
+							expand: {
+								fn: function(saved_views){
+									// Not sure if this will be a problem resetting these functions every time the panel is exapnded
+									// if(typeof saved_views.view.plugins[0].dragZone.beforeDragOver == 'undefined')
+									// {
+										saved_views.view.plugins[0].dragZone.beforeDragOver=function(){
+											Ext.getCmp('deletezone').setText('Drop to delete'); 
+											saved_views.dockedItems.items[2].getEl().setStyle('background', '#ff6161');
+										};
+										saved_views.view.plugins[0].dragZone.beforeDragOut=function(){
+											Ext.getCmp('deletezone').setText('Drop to delete'); 
+											saved_views.dockedItems.items[2].getEl().setStyle('background', '#ff6161');
+										};
+										saved_views.view.plugins[0].dragZone.afterDragDrop= function(){ 
+											Ext.getCmp('deletezone').setText('Drag to reorder');
+											saved_views.dockedItems.items[2].getEl().setStyle('background', '');
+										};	
+										if(Ext.dd.DragDropManager.isDragDrop(saved_views.dockedItems.items[2].getEl().id) == false )
+										{
+											new Ext.dd.DropZone(saved_views.dockedItems.items[2].getEl(),{
+												ddGroup:'saved_viewsDD',
+												getTargetFromEvent: function(e){
+													return saved_views.dockedItems.items[2].getEl();
+												}, 
+												onNodeOver : function(target, dd, e, data){ 
+										            return Ext.dd.DropZone.prototype.dropAllowed;
+										        },
+										        onNodeDrop : function(nodeData, source, e, data){
+													Ext.each(data.records,function(r){
+														r.parentNode.removeChild(r);
+													});
+													return true;
+										        }			
+											});
+										}
+										
+									// }									
+								}
+							}
+						}
+					}
+// end saved views
+		
+				]	
 			}
 		]
 	});
@@ -566,10 +691,11 @@ Ext.onReady(function(){
 			nagiosSearch();			
 		}
 	}
-	
 	// Hack to recalculate the property grid
 	Ext.getCmp('nagiosdetaildata').getEl().setHeight(1800)
-	
+
+	restoreCustomViews();
+
 });
 
 </script>

@@ -20,6 +20,7 @@ use lib '.';
 use JSON;
 use CGI;
 use Monitoring::Livestatus;
+use Fcntl qw(:flock);
 
 # JSON version abstraction
 sub eat_json {
@@ -78,8 +79,70 @@ my $ml=Monitoring::Livestatus->new(
 	errors_are_fatal=>0,
 	warnings=>0
 	);
+	
+# HANDLING FOR STATE FILE FETCHES
+if($q->url_param('state'))
+{
 
+print STDERR "handling state for " . $ENV{'REQUEST_METHOD'} . "\n";
+	# try to open the state as defined in the config
+	open(STATE,$config->{'statefile'}); 
+	my(@statefile) = <STATE>;
+	my $state;
+	# if there is a file with content, parse it into the state hash
+	if(scalar(@statefile))
+	{	
+		$state=eat_json(join("\n",@statefile)) || die "Error parsing state file $!\n";
+	}
+	else
+	{
+		$state={ default_views => [] };
+	}
+	close CFG;
+	
+	# handle GETS on the state
+	if($ENV{'REQUEST_METHOD'} eq 'GET')
+	{
+		if($q->url_param('state') eq 'default')
+		{
+			my $default_views=($state && defined($state->{'default_views'}) ? $state->{'default_views'} : []);
+			print &make_json($default_views,{allow_nonref=>1});
+		}
+		else
+		{
+			my $user_views=($state && defined($state->{$user . '_views'}) ? $state->{$user . '_views'} : []);
+			print &make_json($user_views,{allow_nonref=>1});
+		}
+	}
+	# handle PUTS (updates) to the state
+	if($ENV{'REQUEST_METHOD'} eq 'PUT')
+	{
+		print STDERR "saving state\n";
+		my $update=&eat_json($q->param('PUTDATA'),allow_nonref=>1);
+		if($q->url_param('state') eq 'default')
+		{
+			$state->{'default_views'}=$update;
+		}
+		else
+		{
+			$state->{$user . '_views'} = $update;
+		}
+		open(STATE, '>' . $config->{'statefile'}); 
+		flock(STATE, LOCK_EX);
+		print STATE &make_json($state,{allow_nonref=>1});
+		close STATE;
+	}
+	
+	# this is probably never going to be used
+	if($ENV{'REQUEST_METHOD'}  eq 'POST')
+	{
+		
+	}
+	
+	exit;
+}
 
+# HANDLING FOR EXTERNAL COMMANDS SENT IN 
 if($query=~/COMMAND/)
 {
 	$query=~s/USERNAME/$user/sg;
@@ -90,7 +153,7 @@ if($query=~/COMMAND/)
 	print &make_json($res,{allow_nonref=>1});
 }
 
-#special nagios status query.
+#special nagios status query.  does normal livestatus but does it separately for each server adn then combines
 if($q->param('query') eq 'GET status')
 {
 	my $status_res=[];
@@ -160,6 +223,7 @@ StatsGroupBy: active_checks_enabled',{
 	print &make_json($status_res);
 	exit;
 }
+# another special get status- this query is used to display the high level summary 
 if($q->param('nagiosstatus'))
 {
 	my $hosts_q='GET hosts|Stats: state != 999|StatsGroupBy: active_checks_enabled';
@@ -188,6 +252,8 @@ if($q->param('nagiosstatus'))
 	print &make_json([$status]);
 	exit;
 }
+
+# Processing for normal livestatus queries
 if($query=~/^GET/)
 {
 	$query=~/^GET\s(\w+)/;
