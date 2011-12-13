@@ -508,7 +508,7 @@ function restoreCustomViews()
 					leaf:true
 				});
 			});
-			savedViews.resumeEvents();
+			Ext.defer(savedViews.resumeEvents,1500,savedViews);
 		},
 		failure: function(r,o)
 		{
@@ -528,7 +528,7 @@ function restoreCustomViews()
 					leaf:true
 				});
 			});
-			savedViews.resumeEvents();
+			Ext.defer(savedViews.resumeEvents,1500,savedViews);
 		},
 		failure: function(r,o)
 		{

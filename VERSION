@@ -1,5 +1,7 @@
 VERSION HISTORY
 
+2.1 - Saved Views and updates to support ExtJS 4.0.7
+
 2.0 - Bug fixes and touch interface added.  Requires sencha touch 1.1 framework
 
 1.4 - Initial Release

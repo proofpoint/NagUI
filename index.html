@@ -434,7 +434,7 @@ Ext.onReady(function(){
 				collapsible:true,
 				collapsed: false,
 				width: 450,
-				// title: 'Nagios Browser',
+				title: 'Browser and Saved Views',
 				split: true,
 				items:[
 					nag_tree,
@@ -702,28 +702,27 @@ Ext.onReady(function(){
 <div style='display:none'>
 <div id=help>
 <p>
-The new Nagios UI bring together severial different Nagios instnace data into one single pane of glass.  There
-are 3 main use models for the UI.    
+The new Nagios UI bring together severial different Nagios server data into one single pane of glass.  
 </p>
 <ul>
-<li>Config:  left-hand pane contains are tree laying out the nagios config as a superset of all the nagios instances.
+<li>Browser:  left-hand pane contains are tree laying out the nagios config as a superset of all the nagios instances.
 	The config is broken apart by a pre-defined groups, and also includes a problem summary section
 </li>
 <li>Search:  the Search tab is the first selected Tab in the main (center) pane.  You can search by host or service or hostgroup.
 	Searches do a fuzzy search across name/description/IP address and check output.  You can save searches 
 	into custom views.
 </li>
-<li>Custom Views:   custom views are there to save arbitrary groups of Hostgroups, hosts and services.  The custom
-	views are saved across browser reloads (currently using cookies).   Custom views can be created by dragging
-	and dropping from the search box or from the config pane (left).   Custom views are created by using the 
+<li>Servers: The total hosts and services being monitored by all available Nagios servers is displayed at the top of the screen. You can click on this to open a window that shows detailed data about the nagios servers.  From this window you can also take per-server actions, such as enabling or disabling notifications, checks, etc...
+</li>
+<li>Detail: Detail data can be seen at the bottom of the page. The bottom detail view is updated whenever and item is clicked on.  To the right on the bottom view, there's a 'Properties' slide out that will show all the raw data from the nagios server for that item.
+</li>
+<li>Custom Views:   custom views are there to save arbitrary groups of Hostgroups, hosts and services.  The currently used
+	custom views are saved across browser reloads (currently using cookies).   Custom views can be created by dragging
+	and dropping from the search box or from the config pane (left).  Custom views can be saved and shared.  To share a custom view, first save it using the Actions menu item, then drag it to the 'default' area in the Saved Views section on the left. Custom views are created by using the 
 	Actions toolbar menu. Custom views can be created directly 	from a search using the sub menu item in Actions.
+	Custom Views and Search tabs can be filtered in different ways, such as Ok/status, or 'unhandled'.  They can also be refreshed using the toolbar button and auto-refreshed selecting a time interval from the Refresh button menu.  You can right click on any host or service to perform actions such as enabling/disabling alerts or checks.  You can perform bulk actions on many hosts/services by checking them and performing the actions via the 'Actions' menu located at the top of the section.
 </li>
 </ul>
-<p>
-Custom Views and Search tabs can be filtered by production systems, and Ok/status, or 'unhandled'.  They can also be refreshed using the toolbar button
-and auto-refreshed using the Refresh button menu
-</p>
-<p>
 </div>
 </div>
 </body>
