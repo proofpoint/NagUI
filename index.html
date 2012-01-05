@@ -69,16 +69,27 @@ xhr.open('GET', url, false);
 xhr.send(null);
 
 status = (xhr.status === 1223) ? 204 : xhr.status;
-
+NagUI.username='read only user';
+NagUI.nagios_write=false;
 if (status >= 200 && status < 300) {
     
 	var data=Ext.decode(xhr.responseText);
-	if(data[0].can_submit_commands)
-	{
-		NagUI.username=data[0].name;
-		NagUI.nagios_write=true;
+	NagUI.username='read only user';
+	NagUI.nagios_write=false;
+	var useraccesshtml='<br/>read only access<br/>';
+	if(data[0])
+	{		
+		if(data[0].can_submit_commands)
+		{
+			NagUI.username=data[0].name;
+			NagUI.nagios_write=true;
+		}
+		else
+		{
+		
+		}
+		useraccesshtml='Username: ' + data[0].name +'<br/>Can Submit Commands: ' + NagUI.nagios_write;
 	}
-	var useraccesshtml='Username: ' + data[0].name +'<br/>Can Submit Commands: ' + NagUI.nagios_write;
 }
 else {
     onError.call(this, "Failed loading user info via XHR: '" + url + "'; " +
@@ -396,7 +407,7 @@ Ext.onReady(function(){
 							id: 'nagios_search',
 							stateful:false,
 							listeners:{
-								'itemclick': updateNagiosInfoPanel,
+								'itemclick': updateNagiosInfoPanel
 							},
 							viewConfig: {
 								loadMask: false,
