@@ -274,6 +274,8 @@ function nagiosSearch(term,opts)
 	search.data.loaded=false;
 	var type=Ext.getCmp('search_type').searchtype;
 	search.collapse();
+	search.removeAll();
+	
 	Ext.fly(searchView.getNode(search)).addCls(searchView.loadingCls);
 	
 	search.data.parms={
