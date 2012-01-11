@@ -33,6 +33,7 @@ Ext.require([
     'Ext.grid.*',
     'Ext.tree.*',
     'Ext.state.*',
+	'Ext.Action',
 	'Ext.util.Filter'
 ]);
 // too many items save state otherwise
@@ -115,7 +116,7 @@ Ext.onReady(function(){
 		id: 'peer_name'
 	});	
 		
-	window.nag_tree=new NagUI.NagiosTree({
+	window.nag_tree=Ext.create('NagUI.NagiosTree',{
 		statefulNodes:false,
 		id: 'nag_tree',
 		title: 'Nagios Browser',
@@ -124,6 +125,7 @@ Ext.onReady(function(){
 				fn: updateNagiosInfoPanel
 			}
 		},
+		defaultVisibleColumns:['text','status'],
 		store:new NagUI.NagiosStore({
 			root: {
 				loaded:true,
@@ -406,6 +408,7 @@ Ext.onReady(function(){
 							title:'Search',
 							id: 'nagios_search',
 							stateful:false,
+							defaultVisibleColumns:['text','status','notes','comments_with_info'],
 							listeners:{
 								'itemclick': updateNagiosInfoPanel
 							},
@@ -443,7 +446,7 @@ Ext.onReady(function(){
 				layout:'accordion',
 				stateful: true,
 				collapsible:true,
-				collapsed: false,
+				collapsed:true,
 				width: 450,
 				title: 'Browser and Saved Views',
 				split: true,
