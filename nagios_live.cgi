@@ -115,10 +115,10 @@ print STDERR "handling state for " . $ENV{'REQUEST_METHOD'} . "\n";
 		}
 	}
 	# handle PUTS (updates) to the state
-	if($ENV{'REQUEST_METHOD'} eq 'PUT')
+	if($ENV{'REQUEST_METHOD'} eq 'POST')
 	{
 		print STDERR "saving state\n";
-		my $update=&eat_json($q->param('PUTDATA'),allow_nonref=>1);
+		my $update=&eat_json($q->param('POSTDATA'),{allow_nonref=>1});
 		if($q->url_param('state') eq 'default')
 		{
 			$state->{'default_views'}=$update;

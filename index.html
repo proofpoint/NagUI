@@ -637,10 +637,6 @@ Ext.onReady(function(){
 		}
 	]);
 	nagiosStatus();
-	Ext.TaskManager.start({
-		run:nagiosStatus,
-		interval: 15000
-	});
 	
 	// Restore states
 	// var nag_tree_state=Ext.state.Manager.get('nagios_views');

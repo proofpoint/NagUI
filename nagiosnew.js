@@ -217,6 +217,7 @@ function nagiosStatus()
 		str+='<br/>Services (active/passive): ' + data.services_active + ' / ' + data.services_passive + '</div>';
 		Ext.getCmp('statusbox').getEl().update(str);			
 		//Ext.getCmp('statusboxbutton').setText(str);			
+		Ext.defer(nagiosStatus,20000);
 	}});	
 }
 
@@ -502,7 +503,7 @@ function restoreCustomViews()
 		method: 'GET',
 		success: function(r,o)
 		{
-			var views=Ext.decode(r.responseText);
+            var views=(r.responseText.length>1 ? Ext.decode(r.responseText) : []);
 			Ext.each(views,function(i){
 				savedViews.getRootNode().childNodes[0].appendChild({
 					text: i.text,
@@ -522,7 +523,7 @@ function restoreCustomViews()
 		method: 'GET',
 		success: function(r,o)
 		{
-			var views=Ext.decode(r.responseText);
+            var views=(r.responseText.length>1 ? Ext.decode(r.responseText) : []);
 			Ext.each(views,function(i){
 				savedViews.getRootNode().childNodes[1].appendChild({
 					text: i.text,
@@ -537,7 +538,7 @@ function restoreCustomViews()
 			Ext.notify.msg('Error','There was an error restoring the user saved views');
 		}
 	});
-	
+	Ext.defer(restoreCustomViews,150000);
 }
 
 function saveCustomView(view)
@@ -582,7 +583,7 @@ function persistSavedViews(viewtype)
 	});
 	Ext.Ajax.request({
 		url: NagUI.url + '?state=' + viewtype,
-		method: 'PUT',
+		method: 'POST',
 		jsonData: savedViews,
 		failure: function(r,o)
 		{
