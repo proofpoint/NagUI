@@ -504,6 +504,7 @@ function restoreCustomViews()
 		success: function(r,o)
 		{
             var views=(r.responseText.length>1 ? Ext.decode(r.responseText) : []);
+			savedViews.getRootNode().childNodes[0].removeAll();
 			Ext.each(views,function(i){
 				savedViews.getRootNode().childNodes[0].appendChild({
 					text: i.text,
@@ -524,6 +525,7 @@ function restoreCustomViews()
 		success: function(r,o)
 		{
             var views=(r.responseText.length>1 ? Ext.decode(r.responseText) : []);
+			savedViews.getRootNode().childNodes[1].removeAll();
 			Ext.each(views,function(i){
 				savedViews.getRootNode().childNodes[1].appendChild({
 					text: i.text,
