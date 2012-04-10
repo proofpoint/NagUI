@@ -40,6 +40,46 @@ Ext.require([
 Ext.override(Ext.AbstractComponent, { 
     stateful: false
 });
+if(typeof NagUI == 'undefined')
+{
+	Ext.namespace('NagUI');
+	NagUI.log = function(log) {
+	    if (window.console) {
+	        console.log(log);
+	    }
+	}
+	Date.prototype.format=function(f)
+	{
+		return Ext.util.Format.date(this,f);
+	}
+}
+NagUI.nagios_write=false;
+NagUI.url='/nagui/nagios_live.cgi';
+var url=NagUI.url +'?fetchconfig=1',
+xhr, status, onScriptError;
+
+if (typeof XMLHttpRequest !== 'undefined') {
+    xhr = new XMLHttpRequest();
+} else {
+    xhr = new ActiveXObject('Microsoft.XMLHTTP');
+}
+
+xhr.open('GET', url, false);
+xhr.send(null);
+
+status = (xhr.status === 1223) ? 204 : xhr.status;
+if (status >= 200 && status < 300) {
+    
+	var data=Ext.decode(xhr.responseText);
+	if(data)
+	{
+		NagUI.config=data;
+	}
+}
+else {
+    onError.call(this, "Failed loading config via XHR: '" + url + "'; " +
+                       "XHR status code: " + status);
+}
 
 </script>
 <script type="text/javascript" src="lib/Nagios.js"></script>
@@ -57,7 +97,6 @@ Ext.override(Ext.AbstractComponent, {
 var userquery= 'GET contacts|Columns: can_submit_commands email alias name pager in_service_notification_period host_notification_period service_notification_period in_host_notification_period host_notifications_enabled service_notifications_enabled |Filter: name = USERNAME';
 
 var url=NagUI.url +'?query=' + userquery,
-fileName = url.split('/').pop(),
 xhr, status, onScriptError;
 
 if (typeof XMLHttpRequest !== 'undefined') {
@@ -322,22 +361,28 @@ Ext.onReady(function(){
 						stateful:false,
 						id: 'nagiosdetaildata',
 						listeners:{
-							'show':function() {
-								console.log('show');
-								console.log(arguments);
-							},
-							'beforeshow':function() {
-								console.log('beforeshow');
-								console.log(arguments);
-							},
-							'beforeexpand':function() {
-								console.log('expand');
-								console.log(arguments);
-							},
-							'enable':function() {
-								console.log('enable');
-								console.log(arguments);
+							'beforeedit':{
+								fn: function(){
+									return false;
+								}
 							}
+							// ,
+							// 'show':function() {
+							// 	console.log('show');
+							// 	console.log(arguments);
+							// },
+							// 'beforeshow':function() {
+							// 	console.log('beforeshow');
+							// 	console.log(arguments);
+							// },
+							// 'beforeexpand':function() {
+							// 	console.log('expand');
+							// 	console.log(arguments);
+							// },
+							// 'enable':function() {
+							// 	console.log('enable');
+							// 	console.log(arguments);
+							// }
 
 
 						}							
