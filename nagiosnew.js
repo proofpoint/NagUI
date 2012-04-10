@@ -1,4 +1,4 @@
-/* Copyright 2010-2011 Proofpoint, Inc. All rights reserved.
+ /* Copyright 2010-2011 Proofpoint, Inc. All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -76,6 +76,13 @@ NagUI.nagiosServerStatusWindow=function(config){
 								region: 'center',
 								source:i.data,
 								nameColumnWidth:220,
+								listeners:{
+									'beforeedit':{
+										fn: function(){
+											return false;
+										}
+									}
+								},
 								tbar:[
 								{
 									text: 'Actions',
@@ -550,6 +557,8 @@ function saveCustomView(view)
 	{
 		savedViews.getRootNode().childNodes[1].replaceChild({
 			text:view.getStateId(), 
+			id:view.getStateId(),
+			saveid:view.getStateId(),
 			viewstate: view.getState(),
 			leaf: true 
 		},savedViews.getRootNode().childNodes[1].findChild('text',view.getStateId()));
@@ -558,6 +567,8 @@ function saveCustomView(view)
 	{
 		savedViews.getRootNode().childNodes[1].appendChild({
 			text:view.getStateId(), 
+			id:view.getStateId(),
+			saveid:view.getStateId(),
 			viewstate: view.getState(),
 			leaf:true 
 		});
