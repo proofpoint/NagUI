@@ -80,6 +80,12 @@ my $ml=Monitoring::Livestatus->new(
 	warnings=>0
 	);
 	
+# send the config to the client	
+if($q->url_param('fetchconfig'))
+{
+	print &make_json($config);
+}
+	
 # HANDLING FOR STATE FILE FETCHES
 if($q->url_param('state'))
 {
