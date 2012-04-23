@@ -16,15 +16,15 @@ limitations under the License.
 <head>
 	<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
 	<title>Ops Nagios (ext4)</title>
-	<link rel="stylesheet" type="text/css" href="/extjs4/resources/css/ext-all.css" />
+	<link rel="stylesheet" type="text/css" href="extjs/resources/css/ext-all.css" />
 	<link rel="stylesheet" type="text/css" href="nagios.css" />
 	<link rel="stylesheet" type="text/css" href="custom.css" />
+	<script type="text/javascript" src="extjs/bootstrap.js"></script>
 </head>
 <body>
 <div id="loading" class="pageloading" style=""> 
 <div class="loading-indicator" style="z-index:20000;"><img src="images/loading.gif" style="width:16px;height:16px;" align="absmiddle"> Loading...</div>
 </div> 
-<script type="text/javascript" src="/extjs4/bootstrap.js"></script>
 <script type="text/javascript" src="lib/ExtFixes.js"></script>
 
 <script>
@@ -88,6 +88,7 @@ else {
 <script type="text/javascript" src="lib/NagiosContextMenu.js"></script>
 <script type="text/javascript" src="lib/NagiosTree.js"></script>
 <script type="text/javascript" src="lib/NagiosViews.js"></script>
+<script type="text/javascript" src="lib/SavedViews.js"></script>
 <script type="text/javascript" src="lib/NagiosActions.js"></script>
 <script type="text/javascript" src="lib/NagiosLogGrid.js"></script>
 <script type="text/javascript" src="custom.js"></script>
@@ -254,7 +255,7 @@ Ext.onReady(function(){
 							}
 						},
 						{	
-							id:'batch_enablealerts',
+							// id:'batch_enablealerts',
 							iconCls:'x-tree-notify',
 							text: 'Enable Alerts',
 							handler:function(){
@@ -268,7 +269,7 @@ Ext.onReady(function(){
 						},
 
 						{	
-							id:'batch_disablealerts',
+							// id:'batch_disablealerts',
 							iconCls:'x-tree-ndisabled',
 							text: 'Disable Alerts',
 							handler:function(){
@@ -280,7 +281,7 @@ Ext.onReady(function(){
 							}
 						},
 						{	
-							id:'batch_schedule',
+							// id:'batch_schedule',
 							iconCls:'x-tree-schedule',
 							text: 'Schedule Downtime',
 							handler:function(){
@@ -292,7 +293,7 @@ Ext.onReady(function(){
 							}
 						},
 						{	
-							id:'batch_removedowntime',
+							// id:'batch_removedowntime',
 							iconCls:'x-tree-schedule',
 							text: 'Remove Downtime',
 							handler:function(){
@@ -304,7 +305,7 @@ Ext.onReady(function(){
 							}
 						},
 						{	
-							id:'batch-comment',
+							// id:'batch-comment',
 							iconCls:'x-tree-comment',
 							text: 'Add Comment',
 							handler:function(){
@@ -418,6 +419,7 @@ Ext.onReady(function(){
 						id: 'statusbox',
 						html:'&nbsp;<br>&nbsp;',
 						border:0,
+						height:32,
 						bodyStyle:'height:33;',
 						columnWidth:0.3,
 						listeners: {
@@ -497,122 +499,11 @@ Ext.onReady(function(){
 				split: true,
 				items:[
 					nag_tree,
-
-// SAVED VIEWS.  should this be another class? probably
-					{
+					new NagUI.SavedViews({
 						title: 'Saved Views',
-						xtype: 'treepanel',
-						id: 'saved_views',
-				        viewConfig: {
-				            plugins: {
-				                ptype: 'treeviewdragdrop',
-								ddGroup: 'saved_viewsDD'
-				            }
-				        },
-						bbar:[
-							{xtype:'tbfill'},
-							{
-								id: 'deletezone',
-								text: 'Drag to reorder'
-							},
-							{xtype:'tbfill'}
-						],
-						store: new Ext.data.TreeStore({
-							root: {
-								expanded: true,
-								allowDrop: false,
-								children: [
-									{
-										text: 'Shared Views',
-										leaf: false,
-										allowDrop: true,
-										expanded: true,
-										children: []
-									},
-									{
-										text: NagUI.username + '-Views',
-										leaf: false,
-										allowDrop: true,
-										expanded: true,
-										children: []
-									}
-								]
-							}
-						}),
-						rootVisible: false,
-						listeners:{
-							itemclick: {
-								fn: function(view,rec,item){
-									if(rec.data.leaf)
-									{
-										var viewLkup = Ext.getCmp('nagios_views').items.findIndex('stateId',rec.data.text);
-										if( viewLkup >= 0)
-										{
-											Ext.getCmp('nagios_views').setActiveTab(viewLkup);
-										}
-										else
-										{
-											var newview=addCustomView(rec.data.text);
-											newview.applyState(rec.data.viewstate);
-										}
-									}
-								}
-							},
-							itemappend:{
-								fn: function(parentnode,newnode){
-									persistSavedViews('default');
-									persistSavedViews();
-									Ext.notify.msg('Success','Views saved');
-								}
-							},
-							itemremove:{
-								fn: function(parentnode,newnode){
-									persistSavedViews('default');
-									persistSavedViews();
-								}
-							},
-							expand: {
-								fn: function(saved_views){
-									// Not sure if this will be a problem resetting these functions every time the panel is exapnded
-									// if(typeof saved_views.view.plugins[0].dragZone.beforeDragOver == 'undefined')
-									// {
-										saved_views.view.plugins[0].dragZone.beforeDragOver=function(){
-											Ext.getCmp('deletezone').setText('Drop to delete'); 
-											saved_views.dockedItems.items[2].getEl().setStyle('background', '#ff6161');
-										};
-										saved_views.view.plugins[0].dragZone.beforeDragOut=function(){
-											Ext.getCmp('deletezone').setText('Drop to delete'); 
-											saved_views.dockedItems.items[2].getEl().setStyle('background', '#ff6161');
-										};
-										saved_views.view.plugins[0].dragZone.afterDragDrop= function(){ 
-											Ext.getCmp('deletezone').setText('Drag to reorder');
-											saved_views.dockedItems.items[2].getEl().setStyle('background', '');
-										};	
-										if(Ext.dd.DragDropManager.isDragDrop(saved_views.dockedItems.items[2].getEl().id) == false )
-										{
-											new Ext.dd.DropZone(saved_views.dockedItems.items[2].getEl(),{
-												ddGroup:'saved_viewsDD',
-												getTargetFromEvent: function(e){
-													return saved_views.dockedItems.items[2].getEl();
-												}, 
-												onNodeOver : function(target, dd, e, data){ 
-										            return Ext.dd.DropZone.prototype.dropAllowed;
-										        },
-										        onNodeDrop : function(nodeData, source, e, data){
-													Ext.each(data.records,function(r){
-														r.parentNode.removeChild(r);
-													});
-													return true;
-										        }			
-											});
-										}
-										
-									// }									
-								}
-							}
-						}
-					}
-// end saved views
+						id: 'saved_views'
+					})
+// SAVED VIEWS.  should this be another class? probably
 		
 				]	
 			}
