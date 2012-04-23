@@ -570,37 +570,6 @@ function saveCustomView(view)
 	}
 }
 
-function persistSavedViews(viewtype)
-{
-	var savedViews=[];
-	var parentNode;
-	if(viewtype!='default')
-	{
-		viewtype=NagUI.username;
-		parentNode=Ext.getCmp('saved_views').getRootNode().childNodes[1];
-	}
-	else
-	{
-		parentNode=Ext.getCmp('saved_views').getRootNode().childNodes[0];		
-	}
-	Ext.each(parentNode.childNodes,function(i){
-		savedViews.push({
-			text:i.data.text,
-			viewstate: i.data.viewstate
-		});
-	});
-	Ext.Ajax.request({
-		url: NagUI.url + '?state=' + viewtype,
-		method: 'POST',
-		jsonData: savedViews,
-		failure: function(r,o)
-		{
-			Ext.msg.show('Error','There was an error saving the view');
-			// target.setLoading(false);
-		}
-	});
-	
-}
 
 Ext.notify = function(){
     var msgCt;
