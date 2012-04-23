@@ -135,7 +135,7 @@ print STDERR "handling state for " . $ENV{'REQUEST_METHOD'} . "\n";
 		}
 		open(STATE, '>' . $config->{'statefile'}); 
 		flock(STATE, LOCK_EX);
-		print STATE &make_json($state,{allow_nonref=>1});
+		print STATE &make_json($state,{allow_nonref=>1, pretty=>1});
 		close STATE;
 	}
 	
