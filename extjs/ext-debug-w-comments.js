@@ -5,15 +5,18 @@ Copyright (c) 2011-2012 Sencha Inc
 
 Contact:  http://www.sencha.com/contact
 
-Pre-release code in the Ext repository is intended for development purposes only and will
-not always be stable. 
+GNU General Public License Usage
+This file may be used under the terms of the GNU General Public License version 3.0 as
+published by the Free Software Foundation and appearing in the file LICENSE included in the
+packaging of this file.
 
-Use of pre-release code is permitted with your application at your own risk under standard
-Ext license terms. Public redistribution is prohibited.
+Please review the following information to ensure the GNU General Public License version 3.0
+requirements will be met: http://www.gnu.org/copyleft/gpl.html.
 
-For early licensing, please contact us at licensing@sencha.com
+If you are unsure which license is appropriate for your use, please contact the sales department
+at http://www.sencha.com/contact.
 
-Build date: 2012-04-09 21:11:41 (689b0758837b782dcb0747ba1c4d8ba76344070d)
+Build date: 2012-04-20 14:10:47 (19f55ab932145a3443b228045fa80950dfeaf9cc)
 */
 /**
  * @class Ext
@@ -59,7 +62,7 @@ Ext._startTime = new Date().getTime();
      * {@link Ext.Object#merge} instead.
      * @param {Object} object The receiver of the properties
      * @param {Object} config The source of the properties
-     * @param {Object} defaults A different object that will also be applied for default values
+     * @param {Object} [defaults] A different object that will also be applied for default values
      * @return {Object} returns obj
      */
     Ext.apply = function(object, config, defaults) {
@@ -762,7 +765,7 @@ Ext.globalEval = Ext.global.execScript
 (function() {
 
 // Current core version
-var version = '4.1.0RC', Version;
+var version = '4.1.0', Version;
     Ext.Version = Version = Ext.extend(Object, {
 
         /**
@@ -1213,7 +1216,7 @@ Ext.String = (function() {
                 '&gt;'      :   '>',
                 '&lt;'      :   '<',
                 '&quot;'    :   '"',
-                '&apos;'    :   "'"
+                '&#39;'     :   "'"
             });
         },
 
@@ -2353,7 +2356,7 @@ Ext.Number = new function() {
          * end. Negative values are offsets from the end of the array. If end is omitted,
          * all items up to the end of the array are copied.
          * @return {Array} The copied piece of the array.
-         * @method
+         * @method slice
          */
         // Note: IE6 will return [] on slice.call(x, undefined).
         slice: ([1,2].slice(1, undefined).length ?
@@ -3597,15 +3600,16 @@ var TemplateClass = function(){},
      *         isSuperCool: true,
      *         office: {
      *             size: 40000,
-     *             location: 'Redwood City'
+     *             location: 'Redwood City',
      *             isFun: true
      *         }
      *     }
      *
-     * @param {Object...} object Any number of objects to merge.
-     * @return {Object} merged The object that is created as a result of merging all the objects passed in.
+     * @param {Object} destination The object into which all subsequent objects are merged.
+     * @param {Object...} object Any number of objects to merge into the destination.
+     * @return {Object} merged The destination object with all passed objects merged in.
      */
-    merge: function(source) {
+    merge: function(destination) {
         var i = 1,
             ln = arguments.length,
             mergeFn = ExtObject.merge,
@@ -3618,28 +3622,28 @@ var TemplateClass = function(){},
             for (key in object) {
                 value = object[key];
                 if (value && value.constructor === Object) {
-                    sourceKey = source[key];
+                    sourceKey = destination[key];
                     if (sourceKey && sourceKey.constructor === Object) {
                         mergeFn(sourceKey, value);
                     }
                     else {
-                        source[key] = cloneFn(value);
+                        destination[key] = cloneFn(value);
                     }
                 }
                 else {
-                    source[key] = value;
+                    destination[key] = value;
                 }
             }
         }
 
-        return source;
+        return destination;
     },
 
     /**
      * @private
-     * @param source
+     * @param destination
      */
-    mergeIf: function(source) {
+    mergeIf: function(destination) {
         var i = 1,
             ln = arguments.length,
             cloneFn = Ext.clone,
@@ -3649,20 +3653,20 @@ var TemplateClass = function(){},
             object = arguments[i];
 
             for (key in object) {
-                if (!(key in source)) {
+                if (!(key in destination)) {
                     value = object[key];
 
                     if (value && value.constructor === Object) {
-                        source[key] = cloneFn(value);
+                        destination[key] = cloneFn(value);
                     }
                     else {
-                        source[key] = value;
+                        destination[key] = value;
                     }
                 }
             }
         }
 
-        return source;
+        return destination;
     },
 
     /**
@@ -4175,6 +4179,7 @@ Ext.Date.parse('2009-02', 'Y-m'); // returns a Date object representing February
      */
     defaults: {},
 
+    //<locale type="array">
     /**
      * @property {String[]} dayNames
      * An array of textual day names.
@@ -4188,7 +4193,6 @@ Ext.Date.dayNames = [
 ];
 </code></pre>
      */
-    //<locale type="array">
     dayNames : [
         "Sunday",
         "Monday",
@@ -4200,6 +4204,7 @@ Ext.Date.dayNames = [
     ],
     //</locale>
 
+    //<locale type="array">
     /**
      * @property {String[]} monthNames
      * An array of textual month names.
@@ -4213,7 +4218,6 @@ Ext.Date.monthNames = [
 ];
 </code></pre>
      */
-    //<locale type="array">
     monthNames : [
         "January",
         "February",
@@ -4230,6 +4234,7 @@ Ext.Date.monthNames = [
     ],
     //</locale>
 
+    //<locale type="object">
     /**
      * @property {Object} monthNumbers
      * An object hash of zero-based javascript month numbers (with short month names as keys. note: keys are case-sensitive).
@@ -4245,7 +4250,6 @@ Ext.Date.monthNumbers = {
 };
 </code></pre>
      */
-    //<locale type="object">
     monthNumbers : {
         January: 0,
         Jan: 0,
@@ -4273,46 +4277,46 @@ Ext.Date.monthNumbers = {
     },
     //</locale>
     
+    //<locale>
     /**
      * @property {String} defaultFormat
      * <p>The date format string that the {@link Ext.util.Format#dateRenderer}
      * and {@link Ext.util.Format#date} functions use.  See {@link Ext.Date} for details.</p>
      * <p>This may be overridden in a locale file.</p>
      */
-    //<locale>
     defaultFormat : "m/d/Y",
     //</locale>
+    //<locale type="function">
     /**
      * Get the short month name for the given month number.
      * Override this function for international dates.
      * @param {Number} month A zero-based javascript month number.
      * @return {String} The short month name.
      */
-    //<locale type="function">
     getShortMonthName : function(month) {
         return Ext.Date.monthNames[month].substring(0, 3);
     },
     //</locale>
 
+    //<locale type="function">
     /**
      * Get the short day name for the given day number.
      * Override this function for international dates.
      * @param {Number} day A zero-based javascript day number.
      * @return {String} The short day name.
      */
-    //<locale type="function">
     getShortDayName : function(day) {
         return Ext.Date.dayNames[day].substring(0, 3);
     },
     //</locale>
 
+    //<locale type="function">
     /**
      * Get the zero-based javascript month number for the given short/full month name.
      * Override this function for international dates.
      * @param {String} name The short/full month name.
      * @return {Number} The zero-based javascript month number.
      */
-    //<locale type="function">
     getMonthNumber : function(name) {
         // handle camel casing for english month names (since the keys for the Ext.Date.monthNumbers hash are case sensitive)
         return Ext.Date.monthNumbers[name.substring(0, 1).toUpperCase() + name.substring(1, 3).toLowerCase()];
@@ -4763,6 +4767,7 @@ dt = Ext.Date.parse("2006-02-29 03:20:01", "Y-m-d H:i:s", true); // returns null
          * even though it doesn't exactly match the spec. It gives much more flexibility
          * in being able to specify case insensitive regexes.
          */
+        //<locale type="object" property="parseCodes">
         a: {
             g:1,
             c:"if (/(am)/i.test(results[{0}])) {\n"
@@ -4771,6 +4776,8 @@ dt = Ext.Date.parse("2006-02-29 03:20:01", "Y-m-d H:i:s", true); // returns null
             s:"(am|pm|AM|PM)",
             calcAtEnd: true
         },
+        //</locale>
+        //<locale type="object" property="parseCodes">
         A: {
             g:1,
             c:"if (/(am)/i.test(results[{0}])) {\n"
@@ -4779,6 +4786,7 @@ dt = Ext.Date.parse("2006-02-29 03:20:01", "Y-m-d H:i:s", true); // returns null
             s:"(AM|PM|am|pm)",
             calcAtEnd: true
         },
+        //</locale>
         g: {
             g:1,
             c:"h = parseInt(results[{0}], 10);\n",
@@ -4927,14 +4935,20 @@ dt = Ext.Date.parse("2006-02-29 03:20:01", "Y-m-d H:i:s", true); // returns null
      * Formats a date given the supplied format string.
      * @param {Date} date The date to format
      * @param {String} format The format string
-     * @return {String} The formatted date
+     * @return {String} The formatted date or an empty string if date parameter is not a JavaScript Date object
      */
     format: function(date, format) {
-        if (utilDate.formatFunctions[format] == null) {
+        var formatFunctions = utilDate.formatFunctions;
+
+        if (!Ext.isDate(date)) {
+            return '';
+        }
+
+        if (formatFunctions[format] == null) {
             utilDate.createFormat(format);
         }
-        var result = utilDate.formatFunctions[format].call(date);
-        return result + '';
+
+        return formatFunctions[format].call(date) + '';
     },
 
     /**
@@ -5097,12 +5111,12 @@ console.log(Ext.Date.dayNames[lastDay]); //output: 'Wednesday'
         };
     }()),
 
+    //<locale type="function">
     /**
      * Get the English ordinal suffix of the current day (equivalent to the format specifier 'S').
      * @param {Date} date The date
      * @return {String} 'st, 'nd', 'rd' or 'th'.
      */
-    //<locale type="function">
     getSuffix : function(date) {
         switch (date.getDate()) {
             case 1:
@@ -5397,13 +5411,11 @@ var noArgs = [],
 
         /**
          * @private
-         * @param config
          */
-        '$onExtended': [],
+        $onExtended: [],
 
         /**
          * @private
-         * @param config
          */
         triggerExtended: function() {
             var callbacks = this.$onExtended,
@@ -5420,7 +5432,6 @@ var noArgs = [],
 
         /**
          * @private
-         * @param config
          */
         onExtended: function(fn, scope) {
             this.$onExtended.push({
@@ -6720,7 +6731,7 @@ var noArgs = [],
         Class.triggerExtended.apply(Class, arguments);
 
         if (data.onClassExtended) {
-            Class.onExtended(data.onClassExtended);
+            Class.onExtended(data.onClassExtended, Class);
             delete data.onClassExtended;
         }
 
@@ -8864,6 +8875,17 @@ Ext.Loader = new function() {
         },
 
         /**
+         * @private
+         * @param {String} className
+         */
+        isAClassNameWithAKnownPrefix: function(className) {
+            var prefix = Loader.getPrefix(className);
+
+            // we can only say it's really a class if className is not equal to any known namespace
+            return prefix !== '' && prefix !== className;
+        },
+
+        /**
          * Loads all classes by the given names and all their direct dependencies; optionally executes the given callback function when
          * finishes, within the optional scope. This method is aliased by {@link Ext#require Ext.require} for convenience
          * @param {String/Array} expressions Can either be a string or an array of string
@@ -9990,8 +10012,8 @@ Ext.Error = Ext.extend(Error, {
      */
     toString: function(){
         var me = this,
-            className = me.className ? me.className  : '',
-            methodName = me.methodName ? '.' + me.methodName + '(): ' : '',
+            className = me.sourceClass ? me.sourceClass : '',
+            methodName = me.sourceMethod ? '.' + me.sourceMethod + '(): ' : '',
             msg = me.msg || '(No description provided)';
 
         return className + methodName + msg;
@@ -10314,14 +10336,21 @@ Ext.apply(Ext, {
     escapeId: (function(){
         var validIdRe = /^[a-zA-Z_][a-zA-Z0-9_\-]*$/i,
             escapeRx = /([\W]{1})/g,
+            leadingNumRx = /^(\d)/g,
             escapeFn = function(match, capture){
                 return "\\" + capture;
+            },
+            numEscapeFn = function(match, capture){
+                return '\\00' + capture.charCodeAt(0).toString(16) + ' ';
             };
 
         return function(id) {
             return validIdRe.test(id)
                 ? id
-                : id.replace(escapeRx, escapeFn);
+                // replace the number portion last to keep the trailing ' '
+                // from being escaped
+                : id.replace(escapeRx, escapeFn)
+                    .replace(leadingNumRx, numEscapeFn);
         };
     }()),
 
@@ -10654,11 +10683,20 @@ Opera 11.11 - Opera/9.80 (Windows NT 6.1; U; en) Presto/2.8.131 Version/11.11
             ? (function() {
                 var d;
                 return function(n){
-                    if(n && n.tagName != 'BODY'){
+                    if(n && n.tagName.toUpperCase() != 'BODY'){
                         (Ext.enableNestedListenerRemoval) ? Ext.EventManager.purgeElement(n) : Ext.EventManager.removeAll(n);
+
+                        var cache = Ext.cache,
+                            id = n.id;
+
+                        if (cache[id]) {
+                            delete cache[id].dom;
+                            delete cache[id];
+                        }
+
                         // removing an iframe this way can cause severe leaks
                         // fixes leak issue with htmleditor in themes example
-                        if (n.tagName != 'IFRAME') {
+                        if (n.tagName.toUpperCase() != 'IFRAME') {
                             if (isIE8 && n.parentNode) {
                                 n.parentNode.removeChild(n);
                             }
@@ -10666,15 +10704,22 @@ Opera 11.11 - Opera/9.80 (Windows NT 6.1; U; en) Presto/2.8.131 Version/11.11
                             d.appendChild(n);
                             d.innerHTML = '';
                         }
-                        delete Ext.cache[n.id];
                     }
                 };
             }())
             : function(n) {
-                if (n && n.parentNode && n.tagName != 'BODY') {
+                if (n && n.parentNode && n.tagName.toUpperCase() != 'BODY') {
                     (Ext.enableNestedListenerRemoval) ? Ext.EventManager.purgeElement(n) : Ext.EventManager.removeAll(n);
+
+                    var cache = Ext.cache,
+                        id = n.id;
+
+                    if (cache[id]) {
+                        delete cache[id].dom;
+                        delete cache[id];
+                    }
+
                     n.parentNode.removeChild(n);
-                    delete Ext.cache[n.id];
                 }
             },
 
@@ -13111,7 +13156,7 @@ Ext.supports = {
             identity: 'Vml',
             fn: function(doc) {
                 var d = doc.createElement("div");
-                d.innerHTML = "<!--[if vml]><br><br><![endif]-->";
+                d.innerHTML = "<!--[if vml]><br/><br/><![endif]-->";
                 return (d.childNodes.length == 2);
             }
         },
@@ -13447,6 +13492,14 @@ Ext.require('Ext.util.DelayedTask', function() {
      * @private
      */
     Ext.util.Event = Ext.extend(Object, (function() {
+        function createTargeted(handler, listener, o, scope){
+            return function(){
+                if (o.target === arguments[0]){
+                    handler.apply(scope, arguments);
+                }
+            };
+        }
+
         function createBuffered(handler, listener, o, scope) {
             listener.task = new Ext.util.DelayedTask();
             return function() {
@@ -13524,6 +13577,9 @@ Ext.require('Ext.util.DelayedTask', function() {
                 // because the event removal that the single listener does destroys the listener's DelayedTask(s)
                 if (o.single) {
                     handler = createSingle(handler, listener, o, scope);
+                }
+                if (o.target) {
+                    handler = createTargeted(handler, listener, o, scope);
                 }
                 if (o.delay) {
                     handler = createDelayed(handler, listener, o, scope);
@@ -14260,7 +14316,7 @@ Ext.EventManager = new function() {
         createListenerWrap : function(dom, ename, fn, scope, options) {
             options = options || {};
 
-            var f, gen, wrap = function(e, args) {
+            var f, gen, escapeRx = /\\/g, wrap = function(e, args) {
                 // Compile the implementation upon first firing
                 if (!gen) {
                     f = ['if(!' + Ext.name + ') {return;}'];
@@ -14272,7 +14328,9 @@ Ext.EventManager = new function() {
                     }
 
                     if (options.delegate) {
-                        f.push('var t = e.getTarget("' + options.delegate + '", this);');
+                        // double up '\' characters so escape sequences survive the
+                        // string-literal translation
+                        f.push('var t = e.getTarget("' + (options.delegate + '').replace(escapeRx, '\\\\') + '", this);');
                         f.push('if(!t) {return;}');
                     } else {
                         f.push('var t = e.target;');
@@ -14476,13 +14534,15 @@ Ext.EventManager = new function() {
             return EventManager.resolveTextNode(event.target || event.srcElement);
         },
 
+        // technically no need to browser sniff this, however it makes
+        // no sense to check this every time, for every event, whether
+        // the string is equal.
         /**
          * Resolve any text nodes accounting for browser differences.
          * @private
          * @param {HTMLElement} node The node
          * @return {HTMLElement} The resolved node
          */
-        // technically no need to browser sniff this, however it makes no sense to check this every time, for every event, whether the string is equal.
         resolveTextNode: Ext.isGecko ?
             function(node) {
                 if (!node) {
@@ -17086,12 +17146,13 @@ Ext.dom.AbstractElement.addInheritableStatics({
         },
 
         getXY: function(el) {
-            var bd = (doc.body || doc.documentElement),
+            var bd = doc.body,
+                docEl = doc.documentElement,
                 leftBorder = 0,
                 topBorder = 0,
                 ret = [0,0],
                 round = Math.round,
-                b,
+                box,
                 scroll;
 
             el = Ext.getDom(el);
@@ -17101,19 +17162,19 @@ Ext.dom.AbstractElement.addInheritableStatics({
                 // on element not attached to dom
                 if (Ext.isIE) {
                     try {
-                        b = el.getBoundingClientRect();
-                        // In some versions of IE, the html element will have a 1px border that gets included, so subtract it off
-                        topBorder = bd.clientTop;
-                        leftBorder = bd.clientLeft;
+                        box = el.getBoundingClientRect();
+                        // In some versions of IE, the documentElement (HTML element) will have a 2px border that gets included, so subtract it off
+                        topBorder = docEl.clientTop || bd.clientTop;
+                        leftBorder = docEl.clientLeft || bd.clientLeft;
                     } catch (ex) {
-                        b = { left: 0, top: 0 };
+                        box = { left: 0, top: 0 };
                     }
                 } else {
-                    b = el.getBoundingClientRect();
+                    box = el.getBoundingClientRect();
                 }
 
                 scroll = fly(document).getScroll();
-                ret = [round(b.left + scroll.left - leftBorder), round(b.top + scroll.top - topBorder)];
+                ret = [round(box.left + scroll.left - leftBorder), round(box.top + scroll.top - topBorder)];
             }
             return ret;
         },
@@ -19893,6 +19954,14 @@ Ext.dom.Query = Ext.core.DomQuery = Ext.DomQuery = (function(){
                 lmode = path.match(modeRe),
                 tokenMatch, matched, j, t, m;
 
+            hasEscapes = (path.indexOf('\\') > -1);
+            if (hasEscapes) {
+                path = path
+                    .replace(shortHex, shortToLongHex)
+                    .replace(nonHex, charToLongHex)
+                    .replace(escapes, '\\\\');  // double the '\' for js compilation
+            }
+
             if(lmode && lmode[1]){
                 fn[fn.length] = 'mode="'+lmode[1].replace(trimRe, "")+'";';
                 path = path.replace(lmode[1], "");
@@ -19977,13 +20046,6 @@ Ext.dom.Query = Ext.core.DomQuery = Ext.DomQuery = (function(){
         jsSelect: function(path, root, type){
             // set root to doc if not specified.
             root = root || document;
-
-            if (hasEscapes = (path.indexOf('\\') > -1)) {
-                path = path
-                    .replace(shortHex, shortToLongHex)
-                    .replace(nonHex, charToLongHex)
-                    .replace(escapes, '\\\\');  // double the '\' for js compilation
-            }
 
             if(typeof root == "string"){
                 root = document.getElementById(root);
@@ -20743,15 +20805,17 @@ var HIDDEN = 'hidden',
             visFly = new Element.Fly();
         }
 
-        for (; dom !== stopNode; dom = dom.parentNode) {
-            // We're invisible if we hit a nonexistent parentNode or computed style visibility:hidden or display:none
-            if (!dom || (visFly.attach(dom)).isStyle(VISIBILITY, HIDDEN) || visFly.isStyle(DISPLAY, NONE)) {
+        while (dom !== stopNode) {
+            // We're invisible if we hit a nonexistent parentNode or a document
+            // fragment or computed style visibility:hidden or display:none
+            if (!dom || dom.nodeType === 11 || (visFly.attach(dom)).isStyle(VISIBILITY, HIDDEN) || visFly.isStyle(DISPLAY, NONE)) {
                 return false;
             }
             // Quit now unless we are being asked to check parent nodes.
             if (!deep) {
                 break;
             }
+            dom = dom.parentNode;
         }
         return true;
     },
@@ -23036,8 +23100,20 @@ Ext.dom.Element.override({
      * @return {Ext.Element} The Element
      */
     fadeIn: function(o) {
-        this.animate(Ext.apply({}, o, {
-            opacity: 1
+        var me = this;
+        me.animate(Ext.apply({}, o, {
+            opacity: 1,
+            internalListeners: {
+                beforeanimate: function(anim){
+                    // restore any visibility/display that may have 
+                    // been applied by a fadeout animation
+                    if (me.isStyle('display', 'none')) {
+                        me.setDisplayed('');
+                    } else {
+                        me.show();
+                    } 
+                }
+            }
         }));
         return this;
     },
@@ -23067,7 +23143,7 @@ Ext.dom.Element.override({
      */
     fadeOut: function(o) {
         var me = this;
-        me.animate(Ext.applyIf(o || {}, {
+        o = Ext.apply({
             opacity: 0,
             internalListeners: {
                 afteranimate: function(anim){
@@ -23081,7 +23157,8 @@ Ext.dom.Element.override({
                     }         
                 }
             }
-        }));
+        }, o);
+        me.animate(o);
         return me;
     },
 
@@ -24184,7 +24261,9 @@ if (!view || !view.getComputedStyle) {
                         out = '';
                     }
                 } else {
-                    out = style[camel];
+                    // EXTJSIV-5657 - In IE9 quirks mode there is a chance that VML root element 
+                    // has neither `currentStyle` nor `style`. Return '' this case.
+                    out = style ? style[camel] : '';
                 }
             }
 
