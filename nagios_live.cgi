@@ -52,10 +52,10 @@ my @valid_tables=qw( hosts services hostgroups servicegroups contactgroups servi
 	hostsbygroup contacts commands timeperiods downtimes comments log status columns );;
 
 my $output;
-print $q->header('application/json');
 
 $nagios_servers=$config->{'nagios_servers'};
 my $peer;
+
 
 # only query specified server otherwise query all servers
 if($q->param('peer_name'))
@@ -79,11 +79,78 @@ my $ml=Monitoring::Livestatus->new(
 	errors_are_fatal=>0,
 	warnings=>0
 	);
+
+
+sub getUser()
+{
+	# my $options={ Slice => {}, Sum => 1, Deepcopy => 1, Addpeer=>1  };
+	my $options={ Slice => {}, Deepcopy => 1, Addpeer=>1 };
+	my $user_query="GET contacts|Columns: can_submit_commands email alias name pager in_service_notification_period host_notification_period service_notification_period in_host_notification_period host_notifications_enabled service_notifications_enabled |Filter: name = USERNAME";
+	$user_query=~s/USERNAME/$user/sg;
+	print STDERR "QUERY: $user_query\n" if $DEBUG;
+	$user_query=~s/\|/\n/sg;
+	my $user_obj=$ml->selectall_arrayref($user_query, $options);
+	print STDERR "RESULT: $user_obj\n" if $DEBUG;
+	my $write_access=JSON::false;
+	print STDERR "CONFIG" . $config->{'write_access'};
+	if($config->{'write_access'} eq 'all')
+	{
+		$write_access=JSON::true;
+	}
+	elsif($config->{'write_access'} eq 'contacts' && $$user_obj[0]->{'can_submit_commands'})
+	{
+		$write_access=$$user_obj[0]->{'can_submit_commands'};
+	}
+	elsif(ref $config->{'write_access'} eq 'ARRAY' && grep($ENV{REMOTE_USER},@{$config->{'write_access'}} ) )
+	{
+		$write_access=JSON::true;		
+	}
+	return {
+		name => $ENV{REMOTE_USER},
+		can_submit_commands => $write_access
+	};
+	
+}
+
+sub doCOMMAND()
+{
+	my $user_obj = &getUser();
+	$query=~s/USERNAME/$user/sg;
+	print STDERR "QUERY: $query" if $DEBUG;
+	$query=~s/\|/\n/sg;
+	if( $user_obj->{'can_submit_commands'} eq 'true' || $user_obj->{'can_submit_commands'} eq JSON::true)
+	{
+		my $res=$ml->selectall_arrayref($query,{ Slice => {}, Deepcopy => 1, Addpeer=>1  });
+		print $q->header('application/json');
+		print &make_json($res,{allow_nonref=>1});			
+	}
+	else
+	{
+		my $error={
+			success => JSON::false,
+			result => "error",
+			message => "user cannot submit commands",
+			general_message => "user cannot submit commands"
+		};
+		print $q->header(-type => 'application/json', -status => 401);
+		print &make_json($error);
+	}
+}
 	
 # send the config to the client	
 if($q->url_param('fetchconfig'))
 {
+	print $q->header('application/json');
 	print &make_json($config);
+}
+
+# GET USER
+if($q->url_param('getuser'))
+{
+	print $q->header('application/json');
+	print &make_json(&getUser(),{allow_nonref=>1});
+	exit;
+	
 }
 	
 # HANDLING FOR STATE FILE FETCHES
@@ -112,11 +179,13 @@ print STDERR "handling state for " . $ENV{'REQUEST_METHOD'} . "\n";
 		if($q->url_param('state') eq 'default')
 		{
 			my $default_views=($state && defined($state->{'default_views'}) ? $state->{'default_views'} : []);
+			print $q->header('application/json');
 			print &make_json($default_views,{allow_nonref=>1});
 		}
 		else
 		{
 			my $user_views=($state && defined($state->{$user . '_views'}) ? $state->{$user . '_views'} : []);
+			print $q->header('application/json');
 			print &make_json($user_views,{allow_nonref=>1});
 		}
 	}
@@ -135,6 +204,7 @@ print STDERR "handling state for " . $ENV{'REQUEST_METHOD'} . "\n";
 		}
 		open(STATE, '>' . $config->{'statefile'}); 
 		flock(STATE, LOCK_EX);
+		print $q->header('application/json');
 		print STATE &make_json($state,{allow_nonref=>1, pretty=>1});
 		close STATE;
 	}
@@ -151,12 +221,7 @@ print STDERR "handling state for " . $ENV{'REQUEST_METHOD'} . "\n";
 # HANDLING FOR EXTERNAL COMMANDS SENT IN 
 if($query=~/COMMAND/)
 {
-	$query=~s/USERNAME/$user/sg;
-	print STDERR $query if $DEBUG;
-	$query=~s/\|/\n/sg;
-	
-	my $res=$ml->selectall_arrayref($query,{ Slice => {}, Deepcopy => 1, Addpeer=>1  });
-	print &make_json($res,{allow_nonref=>1});
+	doCOMMAND();
 }
 
 #special nagios status query.  does normal livestatus but does it separately for each server adn then combines
@@ -226,6 +291,7 @@ StatsGroupBy: active_checks_enabled',{
 		
 		push(@$status_res,$inst_res);
 	}
+	print $q->header('application/json');
 	print &make_json($status_res);
 	exit;
 }
@@ -254,7 +320,7 @@ if($q->param('nagiosstatus'))
 		$status->{'services_active'} = $_->{'state != 999'} if($_->{'active_checks_enabled'} eq '1');
 		$status->{'services_passive'} = $_->{'state != 999'} if($_->{'active_checks_enabled'} eq '0');		
 	}
-	
+	print $q->header('application/json');
 	print &make_json([$status]);
 	exit;
 }
@@ -266,6 +332,8 @@ if($query=~/^GET/)
 	my $table=$1;
 	unless(grep(/^$table$/,@valid_tables))
 	{
+		print $q->header( -type => 'application/json', -status => 405);
+		
 		print STDERR "INVALID QUERY: |$table| $query\n" if $DEBUG;
 		exit;
 	}
@@ -274,7 +342,7 @@ if($query=~/^GET/)
 
 	if($query)
 	{
-		print STDERR $query if $DEBUG;
+		print STDERR "QUERY: $query" if $DEBUG;
 		$query=~s/\|/\n/sg;
 		my $options={ Slice => {}, Sum => 1, Deepcopy => 1, Addpeer=>1  };
 		if($q->param('sum'))
@@ -398,7 +466,8 @@ if($query=~/^GET/)
 		{
 			$_->{'status'}=$_->{'plugin_output'};					
 		}
-	
+		print $q->header('application/json');
+
 		print &make_json($res);
 		exit;
 	}
