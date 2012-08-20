@@ -45,7 +45,7 @@ NagUI.nagiosServerStatusWindow=function(config){
 		items: t
 	});
 	w.show();
-	w.getEl().mask('Loading...');
+	// t.getEl().mask('Loading...');
 	Ext.Ajax.request({
 		url: NagUI.url,
 		method: 'GET',
@@ -187,12 +187,13 @@ NagUI.nagiosServerStatusWindow=function(config){
 						]
 					}
 				);
-				if(i.data.error_code)
-				{
-					newc.getEl().mask('Nagios Server Status error: ' + i.data.error_str);
-				}		
+				// if(i.data.error_code)
+				// {
+				// 	newc.getEl().mask('Nagios Server Status error: ' + i.data.error_str);
+				// }		
 			});	
 			o.window.getEl().unmask();
+			t.setActiveTab(0);
 			t.getActiveTab().doLayout();		
 		}
 	});
@@ -412,6 +413,7 @@ function setNagiosInfo(node,target)
 				target.update(replaceURLWithHTMLLinks(info));
 				var detail=Ext.getCmp('nagiosdetaildata');
 				detail.setSource(d[0]);
+				detail.store.sort();
 				// detail.invalidateScroller();
 				
 			}	
