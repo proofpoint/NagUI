@@ -16,7 +16,7 @@ limitations under the License.
 <head>
 	<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
 	<title>Ops Nagios (ext4)</title>
-	<link rel="stylesheet" type="text/css" href="extjs/resources/css/ext-all.css" />
+	<link rel="stylesheet" type="text/css" href="extjs/resources/css/ext-all-debug.css" />
 	<link rel="stylesheet" type="text/css" href="nagios.css" />
 	<link rel="stylesheet" type="text/css" href="custom.css" />
 	<script type="text/javascript" src="extjs/bootstrap.js"></script>
@@ -95,9 +95,7 @@ else {
 <script>
 
 // Load the user info syncronously
-var userquery= 'GET contacts|Columns: can_submit_commands email alias name pager in_service_notification_period host_notification_period service_notification_period in_host_notification_period host_notifications_enabled service_notifications_enabled |Filter: name = USERNAME';
-
-var url=NagUI.url +'?query=' + userquery,
+var url=NagUI.url +'?getuser=1',
 xhr, status, onScriptError;
 
 if (typeof XMLHttpRequest !== 'undefined') {
@@ -118,18 +116,14 @@ if (status >= 200 && status < 300) {
 	NagUI.username='read only user';
 	NagUI.nagios_write=false;
 	var useraccesshtml='<br/>read only access<br/>';
-	if(data[0])
+	if(data)
 	{		
-		if(data[0].can_submit_commands)
+		if(data.can_submit_commands)
 		{
-			NagUI.username=data[0].name;
+			NagUI.username=data.name;
 			NagUI.nagios_write=true;
 		}
-		else
-		{
-		
-		}
-		useraccesshtml='Username: ' + data[0].name +'<br/>Can Submit Commands: ' + NagUI.nagios_write;
+		useraccesshtml='Username: ' + data.name +'<br/>Can Submit Commands: ' + NagUI.nagios_write;
 	}
 }
 else {
@@ -367,25 +361,6 @@ Ext.onReady(function(){
 									return false;
 								}
 							}
-							// ,
-							// 'show':function() {
-							// 	console.log('show');
-							// 	console.log(arguments);
-							// },
-							// 'beforeshow':function() {
-							// 	console.log('beforeshow');
-							// 	console.log(arguments);
-							// },
-							// 'beforeexpand':function() {
-							// 	console.log('expand');
-							// 	console.log(arguments);
-							// },
-							// 'enable':function() {
-							// 	console.log('enable');
-							// 	console.log(arguments);
-							// }
-
-
 						}							
 					}
 				]
@@ -493,7 +468,7 @@ Ext.onReady(function(){
 				layout:'accordion',
 				stateful: true,
 				collapsible:true,
-				collapsed:true,
+				collapsed:false,
 				width: 450,
 				title: 'Browser and Saved Views',
 				split: true,
@@ -655,8 +630,8 @@ The new Nagios UI bring together severial different Nagios server data into one 
 	The config is broken apart by a pre-defined groups, and also includes a problem summary section
 </li>
 <li>Search:  the Search tab is the first selected Tab in the main (center) pane.  You can search by host or service or hostgroup.
-	Searches do a fuzzy search across name/description/IP address and check output.  You can save searches 
-	into custom views.
+	Searches do a fuzzy search across name/description/IP address,notes and check output (for services).  You can save searches 
+	into custom views. These saved searches can also be saved by user and in a shared capacity.
 </li>
 <li>Servers: The total hosts and services being monitored by all available Nagios servers is displayed at the top of the screen. You can click on this to open a window that shows detailed data about the nagios servers.  From this window you can also take per-server actions, such as enabling or disabling notifications, checks, etc...
 </li>
