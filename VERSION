@@ -1,4 +1,13 @@
 VERSION HISTORY
+2.2.0
+-upgraded to ext 4.1
+-added 'embedded' ext 4.1, no longer needs a separate extjs install
+-added new basic access controls.
+	-write access can be granted to 
+		-all authenticated users
+		-all valid nagios config contacts
+		-specified list of authenticated users
+-misc fixes
 
 2.1 - Saved Views and updates to support ExtJS 4.0.7
 
