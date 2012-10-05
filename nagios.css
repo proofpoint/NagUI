@@ -62,19 +62,19 @@ limitations under the License.
 		.pp-nagiostext-0, a span.pp-nagiostext-0 { color: #00CC33; font-weight:bold;}
 		.statusOdd {}
 		.add {
-            background-image:url('/extjs4/resources/images/default/shared/add.gif') !important;
+            background-image:url('extjs/resources/images/default/shared/add.gif') !important;
         }
         .option {
-            background-image:url('/extjs4/resources/images/default/shared/plugin.gif') !important;
+            background-image:url('extjs/resources/images/default/shared/plugin.gif') !important;
         }
         .download {
-            background-image:url('/extjs4/resources/images/default/shared/down2.gif') !important;
+            background-image:url('extjs/resources/images/default/shared/down2.gif') !important;
         }
         .close {
-            background-image:url('/extjs4/resources/images/default/layout/panel-close.gif') !important;
+            background-image:url('extjs/resources/images/default/layout/panel-close.gif') !important;
         }
 		.x-form-search-trigger {
-		    background-image: url('/extjs4/resources/themes/images/default/form/search-trigger.gif');
+		    background-image: url('extjs/resources/themes/images/default/form/search-trigger.gif');
 		}
         .helpicon {
             background-image:url('/nagui/images/help.gif') !important;
@@ -209,7 +209,7 @@ limitations under the License.
 		}
 
 		.x-tree-headers {
-		    background: #f9f9f9 url(/extjs4/resources/images/default/grid/grid3-hrow.gif) repeat-x 0 bottom;
+		    background: #f9f9f9 url(extjs/resources/images/default/grid/grid3-hrow.gif) repeat-x 0 bottom;
 			cursor:default;
 		    zoom:1;
 		}
