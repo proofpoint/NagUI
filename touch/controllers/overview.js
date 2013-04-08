@@ -13,7 +13,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-Ext.regController('overview',{
+Ext.define('overview',{
+	extend: 'Ext.app.Controller',
 	id: 'overview',
 	list: function() {
 		this.main=this.render({

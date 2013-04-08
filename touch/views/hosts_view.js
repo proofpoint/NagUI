@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-nagios.views.hostlist=Ext.extend(Ext.List,{
+NagUI.views.hostlist=Ext.extend(Ext.List,{
 	cls: 'x-list-marginitems',
 	autoHeight: true,
 	plugins:[{
@@ -57,7 +57,7 @@ nagios.views.hostlist=Ext.extend(Ext.List,{
 		}
 	}),
 	initComponent: function(){
-		nagios.views.hostlist.superclass.initComponent.apply(this,arguments);
+		NagUI.views.hostlist.superclass.initComponent.apply(this,arguments);
 		this.enableBubble('selectionchange');
 		this.enableBubble('itemtap');
 		this.enableBubble('itemdoubletap');
@@ -65,15 +65,15 @@ nagios.views.hostlist=Ext.extend(Ext.List,{
 	}
 });
 
-Ext.reg('hostlist',nagios.views.hostlist);
+//Ext.reg('hostlist',NagUI.views.hostlist);
 
 
-nagios.views.hostview=Ext.extend(Ext.Panel, {
+NagUI.views.hostview=Ext.extend(Ext.Panel, {
 	layout: 'fit',
 	fullscreen: true,
 	items: 	{xtype: 'hostlist'},
 	initComponent: function(){
-		nagios.views.hostview.superclass.initComponent.apply(this,arguments);
+		NagUI.views.hostview.superclass.initComponent.apply(this,arguments);
 		this.addDocked({
 			dock: 'top',
 			id: 'test',
@@ -131,4 +131,4 @@ nagios.views.hostview=Ext.extend(Ext.Panel, {
 		}
 	}
 });
-Ext.reg('hostview',nagios.views.hostview);
+//Ext.reg('hostview',NagUI.views.hostview);

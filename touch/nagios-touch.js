@@ -50,24 +50,26 @@ limitations under the License.
         }
     });
 })();
-Ext.regApplication({
+Ext.application({
 	name: 'nagios',
 	glossOnIcon: false,
 	tabletStartupScreen: 'resources/images/tablet_startup.png',
     launch: function(){
-		Ext.dispatch({
-			controller: 'overview',
-			action: 'list'
-		});
+
+    	Ext.create('NagUI.views.topview');
+		// Ext.dispatch({
+		// 	controller: 'overview',
+		// 	action: 'list'
+		// });
 	}
 });		
 
-Ext.setup({
-	fullscreen:true,
-	onReady: function(){
-		NagUI.mobile=true;		
-	}
-});
+// Ext.setup({
+// 	fullscreen:true,
+// 	onReady: function(){
+// 		NagUI.mobile=true;		
+// 	}
+// });
 Ext.notify={
 	msg:function(m) { Ext.Msg.alert(m); }
 };

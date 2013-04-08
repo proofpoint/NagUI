@@ -14,7 +14,7 @@ limitations under the License.
 */
 
 
-nagios.views.ackwindow=Ext.extend(Ext.Panel, {
+NagUI.views.ackwindow=Ext.extend(Ext.Panel, {
 	layout: 'fit',
 	fullscreen: true,
 	ackTarget: undefined,
@@ -97,7 +97,7 @@ nagios.views.ackwindow=Ext.extend(Ext.Panel, {
 		]
 	},
 	initComponent: function(){
-		nagios.views.serviceview.superclass.initComponent.apply(this,arguments);
+		NagUI.views.serviceview.superclass.initComponent.apply(this,arguments);
 		this.addDocked({
 			dock: 'top',
 			xtype: 'toolbar',
@@ -143,5 +143,5 @@ nagios.views.ackwindow=Ext.extend(Ext.Panel, {
 		}
 	}
 });
-Ext.reg('ackwindow',nagios.views.ackwindow);
+//Ext.reg('ackwindow',NagUI.views.ackwindow);
 

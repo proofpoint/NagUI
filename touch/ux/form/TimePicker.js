@@ -173,4 +173,4 @@ Ext.ux.form.TimePicker = Ext.extend(Ext.form.Field, {
     }
 });
 
-Ext.reg('timepickerfield', Ext.ux.form.TimePicker);
+//Ext.reg('timepickerfield', Ext.ux.form.TimePicker);

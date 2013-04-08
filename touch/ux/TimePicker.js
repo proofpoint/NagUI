@@ -176,4 +176,4 @@ Ext.ux.TimePicker = Ext.extend(Ext.Picker, {
     }
 });
 
-Ext.reg('timepicker', Ext.ux.TimePicker);
+//Ext.reg('timepicker', Ext.ux.TimePicker);

@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-nagios.views.servicelist=Ext.extend(Ext.List,{
+NagUI.views.servicelist=Ext.extend(Ext.List,{
 	cls: 'x-list-marginitems',
 	autoHeight: true,
 	plugins:[{
@@ -83,7 +83,7 @@ nagios.views.servicelist=Ext.extend(Ext.List,{
 	}),
 //	onItemDisclosure: function() {},
 	initComponent: function(){
-		nagios.views.servicelist.superclass.initComponent.apply(this,arguments);
+		NagUI.views.servicelist.superclass.initComponent.apply(this,arguments);
 		this.enableBubble('selectionchange');
 		this.enableBubble('itemtap');
 		this.enableBubble('itemdoubletap');
@@ -91,16 +91,16 @@ nagios.views.servicelist=Ext.extend(Ext.List,{
 	}
 });
 
-Ext.reg('servicelist',nagios.views.servicelist);
+//Ext.reg('servicelist',NagUI.views.servicelist);
 
 
 
-nagios.views.serviceview=Ext.extend(Ext.Panel, {
+NagUI.views.serviceview=Ext.extend(Ext.Panel, {
 	layout: 'fit',
 	fullscreen: true,
 	items: 	{xtype: 'servicelist'},
 	initComponent: function(){
-		nagios.views.serviceview.superclass.initComponent.apply(this,arguments);
+		NagUI.views.serviceview.superclass.initComponent.apply(this,arguments);
 		this.addDocked({
 			dock: 'top',
 			xtype: 'toolbar',
@@ -149,14 +149,14 @@ nagios.views.serviceview=Ext.extend(Ext.Panel, {
 		}
 	}
 });
-Ext.reg('serviceview',nagios.views.serviceview);
+//fi('serviceview',NagUI.views.serviceview);
 
-nagios.views.servicepopup=Ext.extend(Ext.Panel, {
+NagUI.views.servicepopup=Ext.extend(Ext.Panel, {
 	floating: true,
 	modal: true,
 	centered: true,
-	width: (Ext.is.iPad ? 600 : 310),
-	height: (Ext.is.iPad ? 700 : 380),
+	width: 310,
+	height: 380,
 	styleHtmlContent: true,
 	scroll: 'vertical',
 	dockedItems: [
@@ -201,4 +201,4 @@ nagios.views.servicepopup=Ext.extend(Ext.Panel, {
 		}
 	]
 });
-Ext.reg('servicepopup',nagios.views.servicepopup);
+//Ext.reg('servicepopup',NagUI.views.servicepopup);

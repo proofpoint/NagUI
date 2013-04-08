@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-nagios.views.nodeheader=Ext.extend(Ext.form.FormPanel,{
+NagUI.views.nodeheader=Ext.extend(Ext.form.FormPanel,{
 	cls: 'x-toolbar-dark',
 	baseCls: 'x-toolbar',
 	initComponent: function(){
@@ -79,7 +79,7 @@ nagios.views.nodeheader=Ext.extend(Ext.form.FormPanel,{
 				}
 			]
 		});
-		nagios.views.nodeheader.superclass.initComponent.apply(this,arguments);
+		NagUI.views.nodeheader.superclass.initComponent.apply(this,arguments);
 	},
 	onFieldChange: function(comp,value){
 		if(comp.id=='search')
@@ -93,4 +93,4 @@ nagios.views.nodeheader=Ext.extend(Ext.form.FormPanel,{
 	}
 });
 
-Ext.reg('nodeheader',nagios.views.nodeheader);
+//Ext.reg('nodeheader',NagUI.views.nodeheader);
