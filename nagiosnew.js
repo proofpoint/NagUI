@@ -312,7 +312,7 @@ function nagiosSearch(term,opts)
 		NagUI.nodeQueries.search= 'GET ' + type + 's|Columns: ' + getColumnsForNagiosType(type) + '|Filter: host_name ~~ ' + term + '|Filter: host_address ~~ ' + term + '|Filter: host_alias ~~ ' + term +'|Filter: description ~~ ' + term + '|Filter: plugin_output ~~ ' + term + '|Filter: host_notes ~~ ' + term + '|Or: 6';				
 	}
 	search.expand();
-	Ext.getCmp('search_permalink').getEl().dom.href='?' + type + '=' + term;
+	Ext.getCmp('search_permalink').getEl().dom.href='?' + type + '_query=' + term;
 }
 function toggleAutoRefresh(i,tree)
 {
@@ -447,6 +447,7 @@ function addCustomView(name){
 		rootVisible:true,
 		closable:true,
 		listeners:{
+			'itemcontextmenu' : doNodeContextMenu,
 			'itemclick': updateNagiosInfoPanel,
 		},
 		// stateful:true,
