@@ -156,6 +156,7 @@ Ext.onReady(function(){
 		id: 'nag_tree',
 		title: 'Nagios Browser',
 		listeners:{
+			'itemcontextmenu' : doNodeContextMenu,
 			'itemclick': {
 				fn: updateNagiosInfoPanel
 			}
@@ -433,6 +434,7 @@ Ext.onReady(function(){
 							stateful:true,
 							defaultVisibleColumns:['text','status','notes','comments_with_info'],
 							listeners:{
+								'itemcontextmenu' : doNodeContextMenu,
 								'itemclick': updateNagiosInfoPanel
 							},
 							viewConfig: {
