@@ -242,6 +242,9 @@ function getColumnsForNagiosType(nagiosType)
 		case 'hostgroup' : 
 			return 'name num_hosts num_services_ok num_services_warn num_services_crit num_services_unknown';
 			break;			
+		case 'servicegroup' : 
+			return 'name num_services_ok num_services_warn num_services_crit num_services_unknown';
+			break;			
 		case 'host' : 
 			return 'notification_period address groups notes notes_url scheduled_downtime_depth next_check downtimes_with_info notifications_enabled comments_with_info acknowledged last_check last_hard_state_change name num_services_ok num_services_warn num_services_crit num_services_unknown state';
 			break;
@@ -296,6 +299,10 @@ function nagiosSearch(term,opts)
 	{
 		NagUI.nodeQueries.search= 'GET ' + type + 's|Columns: ' + getColumnsForNagiosType(type) + '|Filter: name ~~ ' + term;		
 	}
+	if(type == 'servicegroup')
+	{
+		NagUI.nodeQueries.search= 'GET ' + type + 's|Columns: ' + getColumnsForNagiosType(type) + '|Filter: name ~~ ' + term;		
+	}
 	if(type == 'host')
 	{
 		NagUI.nodeQueries.search= 'GET ' + type + 's|Columns: ' + getColumnsForNagiosType(type) + '|Filter: name ~~ ' + term + '|Filter: address ~~ ' + term + '|Filter: alias ~~ ' + term + '|Filter: notes ~~ ' + term + '|Or: 4';		
@@ -305,7 +312,7 @@ function nagiosSearch(term,opts)
 		NagUI.nodeQueries.search= 'GET ' + type + 's|Columns: ' + getColumnsForNagiosType(type) + '|Filter: host_name ~~ ' + term + '|Filter: host_address ~~ ' + term + '|Filter: host_alias ~~ ' + term +'|Filter: description ~~ ' + term + '|Filter: plugin_output ~~ ' + term + '|Filter: host_notes ~~ ' + term + '|Or: 6';				
 	}
 	search.expand();
-	
+	Ext.getCmp('search_permalink').getEl().dom.href='?' + type + '=' + term;
 }
 function toggleAutoRefresh(i,tree)
 {
