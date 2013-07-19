@@ -227,6 +227,7 @@ limitations under the License.
 		}
 		.x-grid-tree-loading .x-tree-host, .x-grid-tree-loading .host,  .x-grid-tree-loading .x-tree-service,  
 		.x-grid-tree-loading .service, .x-grid-tree-loading .x-tree-group, .x-grid-tree-loading .hostgroup,  
+		.x-grid-tree-loading .servicegroup, .x-grid-tree-loading .x-tree-servicegroup,
 		.x-grid-tree-loading .meta,  .x-grid-tree-loading .x-tree-search,  .x-grid-tree-loading .x-tree-problem,
 		.x-grid-tree-loading .x-tree-ack,  .x-grid-tree-loading .x-tree-hostgroup {
 			background-image:url(/nagui/images/loading.gif) !important;
