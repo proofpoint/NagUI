@@ -28,13 +28,16 @@ limitations under the License.
 <script type="text/javascript" src="lib/ExtFixes.js"></script>
 
 <script>
+Ext.Loader.setPath('Ext.ux','ux');
 Ext.require([
     'Ext.data.*',
     'Ext.grid.*',
     'Ext.tree.*',
     'Ext.state.*',
 	'Ext.Action',
-	'Ext.util.Filter'
+	'Ext.util.Filter',
+	'Ext.ux.grid.FiltersFeature'
+
 ]);
 // too many items save state otherwise
 Ext.override(Ext.AbstractComponent, { 
@@ -339,23 +342,36 @@ Ext.onReady(function(){
 						xtype: 'nagiosloggrid',
 						tbar:undefined,
 						id: 'livelog',
+						features: [{
+						    ftype: 'filters',
+						    // encode and local configuration options defined previously for easier reuse
+						    encode: 'encode', // json encode the filter query
+						    local: 'local',   // defaults to false (remote filtering)
+
+						    // Filters are most naturally placed in the column definition, but can also be
+						    // added here.
+						    filters: [{
+						        type: 'boolean',
+						        dataIndex: 'visible'
+						    }]
+						}],
 						viewConfig:{
 							loadMask:false
 						},
 						columns:[
 							{ text: 'Time', dataIndex: 'time',width: 130, renderer: nagiosDateRender },
-							{ text: 'State', dataIndex: 'state', width: 60, renderer: nagiosStateRender },
-							{ text: 'State Type', dataIndex: 'state_type', width: 80,hidden: true},
-							{ text: 'Type', dataIndex: 'type', width: 160,hidden: true},
+							{ text: 'State', dataIndex: 'state', width: 60, renderer: nagiosStateRender,filterable:true },
+							{ text: 'State Type', dataIndex: 'state_type', width: 80,hidden: true,filterable:true},
+							{ text: 'Type', dataIndex: 'type', width: 160,hidden: true,filterable:true},
 							{ text: 'Mesg', dataIndex: 'message', hidden:false, flex:2},
-							{ text: 'Host', dataIndex: 'host_name',hidden:false},
+							{ text: 'Host', dataIndex: 'host_name',hidden:false,filterable:true},
 							{ text: 'LineNo', dataIndex: 'lineno',hidden:true},
 							{ text: 'Options', dataIndex: 'options',hidden:true},
-							{ text: 'Service', dataIndex: 'service_description', hidden:false},
-							{ text: 'Contact', dataIndex: 'contact_name', hidden:true},
+							{ text: 'Service', dataIndex: 'service_description', hidden:false,filterable:true},
+							{ text: 'Contact', dataIndex: 'contact_name', hidden:true,filterable:true},
 							{ text: 'Output', dataIndex: 'plugin_output', hidden:true},
 							{ text: 'Attempt', dataIndex: 'attempt', hidden:true},
-							{ text: 'Log Class', dataIndex: 'class', hidden:false, renderer:nagiosLogClassRender},
+							{ text: 'Log Class', dataIndex: 'class', hidden:false, renderer:nagiosLogClassRender,filterable:true},
 							{ text: 'Command', dataIndex: 'command_name',hidden:true}			
 						],
 						dockedItems:[
