@@ -339,6 +339,25 @@ Ext.onReady(function(){
 						xtype: 'nagiosloggrid',
 						tbar:undefined,
 						id: 'livelog',
+						viewConfig:{
+							loadMask:false
+						},
+						columns:[
+							{ text: 'Time', dataIndex: 'time',width: 130, renderer: nagiosDateRender },
+							{ text: 'State', dataIndex: 'state', width: 60, renderer: nagiosStateRender },
+							{ text: 'State Type', dataIndex: 'state_type', width: 80,hidden: true},
+							{ text: 'Type', dataIndex: 'type', width: 160,hidden: true},
+							{ text: 'Mesg', dataIndex: 'message', hidden:false, flex:2},
+							{ text: 'Host', dataIndex: 'host_name',hidden:false},
+							{ text: 'LineNo', dataIndex: 'lineno',hidden:true},
+							{ text: 'Options', dataIndex: 'options',hidden:true},
+							{ text: 'Service', dataIndex: 'service_description', hidden:false},
+							{ text: 'Contact', dataIndex: 'contact_name', hidden:true},
+							{ text: 'Output', dataIndex: 'plugin_output', hidden:true},
+							{ text: 'Attempt', dataIndex: 'attempt', hidden:true},
+							{ text: 'Log Class', dataIndex: 'class', hidden:false, renderer:nagiosLogClassRender},
+							{ text: 'Command', dataIndex: 'command_name',hidden:true}			
+						],
 						dockedItems:[
 						{
 							xtype: 'toolbar',
@@ -349,6 +368,14 @@ Ext.onReady(function(){
 									xtype:'button',
 									icon: 'images/play.gif',
 									handler: function(){
+										if(this.icon=='images/play.gif')
+										{
+											this.setIcon('images/pause.gif');
+										}
+										else
+										{
+											this.setIcon('images/play.gif');
+										}
 										NagUI.toggleLiveLog(Ext.getCmp('livelog'));
 									}
 								}
@@ -699,7 +726,7 @@ Ext.onReady(function(){
 		}
 	}
 	// Hack to recalculate the property grid
-	Ext.getCmp('nagiosdetaildata').getEl().setHeight(1800)
+	// Ext.getCmp('nagiosdetaildata').getEl().setHeight(1800)
 
 	restoreCustomViews();
 
