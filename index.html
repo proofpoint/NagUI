@@ -322,7 +322,7 @@ Ext.onReady(function(){
 		id: 'nagui_app',
 		items:[
 			{
-				xtype: 'panel',
+				xtype: 'tabpanel',
 				region:'south',
 				layout:'border',
 				split:true,
@@ -330,41 +330,72 @@ Ext.onReady(function(){
 				// frame:true,
 				// baseCls:'x-nagios-statuspanel',
 				bodyStyle:'background:  #D0DEF0;padding:3px',
-				height:110,
+				height:130,
 				border:0,
+				tabPosition:'left',
 				items:[
 					{
-						xtype:'panel',
-						region:'center',
-						id:'nagiosdetail',
-						bodyStyle:'background:  #D0DEF0;padding:3px',
-						autoScroll:true				
+						title: 'Live Log',
+						xtype: 'nagiosloggrid',
+						tbar:undefined,
+						id: 'livelog',
+						dockedItems:[
+						{
+							xtype: 'toolbar',
+							dock: 'left',
+							vertical: true,
+							items:[
+								{
+									xtype:'button',
+									icon: 'images/play.gif',
+									handler: function(){
+										NagUI.toggleLiveLog(Ext.getCmp('livelog'));
+									}
+								}
+							]
+						}
+						]
 					},
 					{
-						title: 'Properties',
-						xtype: 'propertygrid',
-						region:'east',
-						collapsed:true,
-						collapsible:true,
-						titleCollapse:true,
-						// collapseMode: 'header',
-						hideCollapseTool:true,
-						preventHeader:true,
-						hideHeaders:true,
-						source:{},
-						width:500,
-						split:false,
-						nameColumnWidth: 200,
-						stateful:false,
-						id: 'nagiosdetaildata',
-						listeners:{
-							'beforeedit':{
-								fn: function(){
-									return false;
-								}
+						title: 'Detail',
+						xtype:'panel',
+						layout: 'border',
+						items:[
+							{
+								xtype:'panel',
+								region:'center',
+								id:'nagiosdetail',
+								bodyStyle:'background:  #D0DEF0;padding:3px',
+								autoScroll:true				
+							},
+							{
+								title: 'Properties',
+								xtype: 'propertygrid',
+								region:'east',
+								collapsed:true,
+								collapsible:true,
+								titleCollapse:true,
+								// collapseMode: 'header',
+								hideCollapseTool:true,
+								preventHeader:true,
+								hideHeaders:true,
+								source:{},
+								width:500,
+								split:false,
+								nameColumnWidth: 200,
+								stateful:false,
+								id: 'nagiosdetaildata',
+								listeners:{
+									'beforeedit':{
+										fn: function(){
+											return false;
+										}
+									}
+								}							
 							}
-						}							
-					}
+						]
+
+					}				
 				]
 			},	
 			{
