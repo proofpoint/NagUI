@@ -13,10 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-Ext.define('top_level',{
-	extent: 'Ext.data.Model',
-	config:{
-		fields: ['label','status_text','status','query','target']
-	}
+Ext.regModel('top_level',{
+	fields: ['label','status_text','status','query','target']
 });
 

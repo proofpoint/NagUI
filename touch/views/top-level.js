@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-NagUI.views.topview=Ext.extend(Ext.Panel, {
+nagios.views.topview=Ext.extend(Ext.Panel, {
 	layout: 'card',
 	cls:'app',
 	fullscreen: true,
@@ -69,15 +69,15 @@ NagUI.views.topview=Ext.extend(Ext.Panel, {
 			// 	xtype: 'mainheader'
 			// }
 		});
-		NagUI.views.topview.superclass.initComponent.apply(this,arguments);
+		nagios.views.topview.superclass.initComponent.apply(this,arguments);
 	},
     onSearch : function(comp, value) {
         this.fireEvent('search', value, this);
     }
 });
-//Ext.reg('nagiostopview',NagUI.views.topview);
+Ext.reg('nagiostopview',nagios.views.topview);
 
-NagUI.views.toplist=Ext.extend(Ext.List,{
+nagios.views.toplist=Ext.extend(Ext.List,{
 
 	itemTpl: new Ext.XTemplate(
 		'<div>',
@@ -110,8 +110,8 @@ NagUI.views.toplist=Ext.extend(Ext.List,{
 		this.store.add();
 		this.enableBubble('selectionchange');
 		this.enableBubble('itemtap');
-		NagUI.views.toplist.superclass.initComponent.apply(this,arguments);
+		nagios.views.toplist.superclass.initComponent.apply(this,arguments);
 	}
 });
 
-//Ext.reg('toplist',NagUI.views.toplist);
+Ext.reg('toplist',nagios.views.toplist);
