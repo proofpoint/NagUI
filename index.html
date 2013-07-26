@@ -338,6 +338,46 @@ Ext.onReady(function(){
 				tabPosition:'left',
 				items:[
 					{
+						title: 'Detail',
+						xtype:'panel',
+						layout: 'border',
+						items:[
+							{
+								xtype:'panel',
+								region:'center',
+								id:'nagiosdetail',
+								bodyStyle:'background:  #D0DEF0;padding:3px',
+								autoScroll:true				
+							},
+							{
+								title: 'Properties',
+								xtype: 'propertygrid',
+								region:'east',
+								collapsed:true,
+								collapsible:true,
+								titleCollapse:true,
+								// collapseMode: 'header',
+								hideCollapseTool:true,
+								preventHeader:true,
+								hideHeaders:true,
+								source:{},
+								width:500,
+								split:false,
+								nameColumnWidth: 200,
+								stateful:false,
+								id: 'nagiosdetaildata',
+								listeners:{
+									'beforeedit':{
+										fn: function(){
+											return false;
+										}
+									}
+								}							
+							}
+						]
+
+					},
+					{
 						title: 'Live Log',
 						xtype: 'nagiosloggrid',
 						tbar:undefined,
@@ -382,6 +422,7 @@ Ext.onReady(function(){
 							items:[
 								{
 									xtype:'button',
+									tooltip: 'start/pause displaying log entries as they are recieved from the nagios servers',
 									icon: 'images/play.gif',
 									handler: function(){
 										if(this.icon=='images/play.gif')
@@ -398,47 +439,7 @@ Ext.onReady(function(){
 							]
 						}
 						]
-					},
-					{
-						title: 'Detail',
-						xtype:'panel',
-						layout: 'border',
-						items:[
-							{
-								xtype:'panel',
-								region:'center',
-								id:'nagiosdetail',
-								bodyStyle:'background:  #D0DEF0;padding:3px',
-								autoScroll:true				
-							},
-							{
-								title: 'Properties',
-								xtype: 'propertygrid',
-								region:'east',
-								collapsed:true,
-								collapsible:true,
-								titleCollapse:true,
-								// collapseMode: 'header',
-								hideCollapseTool:true,
-								preventHeader:true,
-								hideHeaders:true,
-								source:{},
-								width:500,
-								split:false,
-								nameColumnWidth: 200,
-								stateful:false,
-								id: 'nagiosdetaildata',
-								listeners:{
-									'beforeedit':{
-										fn: function(){
-											return false;
-										}
-									}
-								}							
-							}
-						]
-
-					}				
+					}
 				]
 			},	
 			{
@@ -687,6 +688,10 @@ Ext.onReady(function(){
 		// }
 	}							
 	Ext.tip.QuickTipManager.init();
+	Ext.tip.QuickTipManager.register({
+		target: 'statusbox',
+		text: 'click to display detailed server info'
+	});
 	// Post app setup, do things that need all the components done.
 	
 	// execute for search in url
