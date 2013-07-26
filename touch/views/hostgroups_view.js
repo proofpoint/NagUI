@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-NagUI.views.grouplist=Ext.extend(Ext.List,{
+nagios.views.grouplist=Ext.extend(Ext.List,{
 	autoHeight: true,
 	plugins:[{
 		ptype: 'pullrefresh',
@@ -50,21 +50,21 @@ NagUI.views.grouplist=Ext.extend(Ext.List,{
 		}
 	}),
 	initComponent: function(){
-		NagUI.views.grouplist.superclass.initComponent.apply(this,arguments);
+		nagios.views.grouplist.superclass.initComponent.apply(this,arguments);
 		this.enableBubble('selectionchange');
 		this.enableBubble('itemtap');
 	}
 });
 
-//Ext.reg('grouplist',NagUI.views.grouplist);
+Ext.reg('grouplist',nagios.views.grouplist);
 
 
-NagUI.views.groupview=Ext.extend(Ext.Panel, {
+nagios.views.groupview=Ext.extend(Ext.Panel, {
 	layout: 'fit',
 	fullscreen: true,
 	items: 	{xtype: 'grouplist'},
 	initComponent: function(){
-		NagUI.views.groupview.superclass.initComponent.apply(this,arguments);
+		nagios.views.groupview.superclass.initComponent.apply(this,arguments);
 		this.addDocked({
 			dock: 'top',
 			id: 'test',
@@ -108,4 +108,4 @@ NagUI.views.groupview=Ext.extend(Ext.Panel, {
 		this.ownerCt.layout.prev({type: 'slide', direction: 'right'});
 	}
 });
-//Ext.reg('groupview',NagUI.views.groupview);
+Ext.reg('groupview',nagios.views.groupview);
