@@ -235,8 +235,11 @@ limitations under the License.
 		.x-tree-service, .service{
 			background-image:url(/nagui/images/service.gif) !important;
 		}
-		.x-tree-group,.x-tree-hostgroup,.x-tree-meta, .meta, .hostgroup, .x-tree-servicegroup, .servicegroup{
+		.x-tree-group,.x-tree-hostgroup,.x-tree-meta, .meta, .hostgroup{
 			background-image:url(/nagui/images/group.gif) !important;
+		}
+		.x-tree-servicegroup, .servicegroup{
+			background-image:url(/nagui/images/servicegroup.gif) !important;
 		}
 		.x-tree-problem{
 			background-image:url(/nagui/images/critical.png) !important;
