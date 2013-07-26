@@ -1,4 +1,11 @@
 VERSION HISTORY
+2.3.0
+-upgarded to ext 4.2.1
+-added support for servicegroups
+-added livelog feature
+-added search permalink
+-misc fixes
+
 2.2.0
 -upgraded to ext 4.1
 -added 'embedded' ext 4.1, no longer needs a separate extjs install

@@ -227,6 +227,7 @@ limitations under the License.
 		}
 		.x-grid-tree-loading .x-tree-host, .x-grid-tree-loading .host,  .x-grid-tree-loading .x-tree-service,  
 		.x-grid-tree-loading .service, .x-grid-tree-loading .x-tree-group, .x-grid-tree-loading .hostgroup,  
+		.x-grid-tree-loading .servicegroup, .x-grid-tree-loading .x-tree-servicegroup,
 		.x-grid-tree-loading .meta,  .x-grid-tree-loading .x-tree-search,  .x-grid-tree-loading .x-tree-problem,
 		.x-grid-tree-loading .x-tree-ack,  .x-grid-tree-loading .x-tree-hostgroup {
 			background-image:url(/nagui/images/loading.gif) !important;
@@ -236,6 +237,9 @@ limitations under the License.
 		}
 		.x-tree-group,.x-tree-hostgroup,.x-tree-meta, .meta, .hostgroup{
 			background-image:url(/nagui/images/group.gif) !important;
+		}
+		.x-tree-servicegroup, .servicegroup{
+			background-image:url(/nagui/images/servicegroup.gif) !important;
 		}
 		.x-tree-problem{
 			background-image:url(/nagui/images/critical.png) !important;
@@ -296,7 +300,7 @@ limitations under the License.
 		.x-nagios-titlebox{
 			padding:6px;
 			font-size:12pt;
-			background:  #D0DEF0 url(images/nagios-logo.gif) no-repeat  5px -15px;
+			background:  #D0DEF0 url(images/nagui-logo-small.gif) no-repeat  5px 2px;
 		} 
 		.x-tree-status{
 			border: 0 none;

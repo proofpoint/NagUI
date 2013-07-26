@@ -28,13 +28,16 @@ limitations under the License.
 <script type="text/javascript" src="lib/ExtFixes.js"></script>
 
 <script>
+Ext.Loader.setPath('Ext.ux','ux');
 Ext.require([
     'Ext.data.*',
     'Ext.grid.*',
     'Ext.tree.*',
     'Ext.state.*',
 	'Ext.Action',
-	'Ext.util.Filter'
+	'Ext.util.Filter',
+	'Ext.ux.grid.FiltersFeature'
+
 ]);
 // too many items save state otherwise
 Ext.override(Ext.AbstractComponent, { 
@@ -152,9 +155,11 @@ Ext.onReady(function(){
 		
 	window.nag_tree=Ext.create('NagUI.NagiosTree',{
 		statefulNodes:false,
+		stateful: true,
 		id: 'nag_tree',
 		title: 'Nagios Browser',
 		listeners:{
+			'itemcontextmenu' : doNodeContextMenu,
 			'itemclick': {
 				fn: updateNagiosInfoPanel
 			}
@@ -320,7 +325,7 @@ Ext.onReady(function(){
 		id: 'nagui_app',
 		items:[
 			{
-				xtype: 'panel',
+				xtype: 'tabpanel',
 				region:'south',
 				layout:'border',
 				split:true,
@@ -328,40 +333,112 @@ Ext.onReady(function(){
 				// frame:true,
 				// baseCls:'x-nagios-statuspanel',
 				bodyStyle:'background:  #D0DEF0;padding:3px',
-				height:110,
+				height:130,
 				border:0,
+				tabPosition:'left',
 				items:[
 					{
+						title: 'Detail',
 						xtype:'panel',
-						region:'center',
-						id:'nagiosdetail',
-						bodyStyle:'background:  #D0DEF0;padding:3px',
-						autoScroll:true				
+						layout: 'border',
+						items:[
+							{
+								xtype:'panel',
+								region:'center',
+								id:'nagiosdetail',
+								bodyStyle:'background:  #D0DEF0;padding:3px',
+								autoScroll:true				
+							},
+							{
+								title: 'Properties',
+								xtype: 'propertygrid',
+								region:'east',
+								collapsed:true,
+								collapsible:true,
+								titleCollapse:true,
+								// collapseMode: 'header',
+								hideCollapseTool:true,
+								preventHeader:true,
+								hideHeaders:true,
+								source:{},
+								width:500,
+								split:false,
+								nameColumnWidth: 200,
+								stateful:false,
+								id: 'nagiosdetaildata',
+								listeners:{
+									'beforeedit':{
+										fn: function(){
+											return false;
+										}
+									}
+								}							
+							}
+						]
+
 					},
 					{
-						title: 'Properties',
-						xtype: 'propertygrid',
-						region:'east',
-						collapsed:true,
-						collapsible:true,
-						titleCollapse:true,
-						// collapseMode: 'header',
-						hideCollapseTool:true,
-						preventHeader:true,
-						hideHeaders:true,
-						source:{},
-						width:500,
-						split:false,
-						nameColumnWidth: 200,
-						stateful:false,
-						id: 'nagiosdetaildata',
-						listeners:{
-							'beforeedit':{
-								fn: function(){
-									return false;
+						title: 'Live Log',
+						xtype: 'nagiosloggrid',
+						tbar:undefined,
+						id: 'livelog',
+						features: [{
+						    ftype: 'filters',
+						    // encode and local configuration options defined previously for easier reuse
+						    encode: 'encode', // json encode the filter query
+						    local: 'local',   // defaults to false (remote filtering)
+
+						    // Filters are most naturally placed in the column definition, but can also be
+						    // added here.
+						    filters: [{
+						        type: 'boolean',
+						        dataIndex: 'visible'
+						    }]
+						}],
+						viewConfig:{
+							loadMask:false
+						},
+						columns:[
+							{ text: 'Time', dataIndex: 'time',width: 130, renderer: nagiosDateRender },
+							{ text: 'State', dataIndex: 'state', width: 60, renderer: nagiosStateRender,filterable:true },
+							{ text: 'State Type', dataIndex: 'state_type', width: 80,hidden: true,filterable:true},
+							{ text: 'Type', dataIndex: 'type', width: 160,hidden: true,filterable:true},
+							{ text: 'Mesg', dataIndex: 'message', hidden:false, flex:2},
+							{ text: 'Host', dataIndex: 'host_name',hidden:false,filterable:true},
+							{ text: 'LineNo', dataIndex: 'lineno',hidden:true},
+							{ text: 'Options', dataIndex: 'options',hidden:true},
+							{ text: 'Service', dataIndex: 'service_description', hidden:false,filterable:true},
+							{ text: 'Contact', dataIndex: 'contact_name', hidden:true,filterable:true},
+							{ text: 'Output', dataIndex: 'plugin_output', hidden:true},
+							{ text: 'Attempt', dataIndex: 'attempt', hidden:true},
+							{ text: 'Log Class', dataIndex: 'class', hidden:false, renderer:nagiosLogClassRender,filterable:true},
+							{ text: 'Command', dataIndex: 'command_name',hidden:true}			
+						],
+						dockedItems:[
+						{
+							xtype: 'toolbar',
+							dock: 'left',
+							vertical: true,
+							items:[
+								{
+									xtype:'button',
+									tooltip: 'start/pause displaying log entries as they are recieved from the nagios servers',
+									icon: 'images/play.gif',
+									handler: function(){
+										if(this.icon=='images/play.gif')
+										{
+											this.setIcon('images/pause.gif');
+										}
+										else
+										{
+											this.setIcon('images/play.gif');
+										}
+										NagUI.toggleLiveLog(Ext.getCmp('livelog'));
+									}
 								}
-							}
-						}							
+							]
+						}
+						]
 					}
 				]
 			},	
@@ -429,9 +506,10 @@ Ext.onReady(function(){
 						new NagUI.NagiosTree({
 							title:'Search',
 							id: 'nagios_search',
-							stateful:false,
+							stateful:true,
 							defaultVisibleColumns:['text','status','notes','comments_with_info'],
 							listeners:{
+								'itemcontextmenu' : doNodeContextMenu,
 								'itemclick': updateNagiosInfoPanel
 							},
 							viewConfig: {
@@ -447,15 +525,36 @@ Ext.onReady(function(){
 							rootVisible:true,
 							store:new NagUI.NagiosStore({
 								root: {
-									loaded:true,
-									expanded:true,
+									loaded:false,
+									expanded: false,
 									text: 'Search',
 									iconCls:'x-tree-search',
 									meta: 1						
 								},
 								customHostFilters:['Filter: name != dummy-host-all-services'],
 								customServiceFilters:['Filter: host_name !~ dummy-host-all-services']
-							})
+							}),
+							dockedItems:[
+							{
+								xtype:'tbspacer'
+							},
+							{
+								dock: 'bottom',
+								xtype: 'toolbar',
+								items: [
+									{
+										xtype: 'box',
+										id: 'search_permalink',
+										autoEl: {
+											tag: 'a',
+											style:'padding: 3px;',
+											href: '',
+											cn: 'Permalink'
+										}
+									}
+								]
+							}
+							]
 						})
 					]
 				}
@@ -484,11 +583,11 @@ Ext.onReady(function(){
 			}
 		]
 	});
-
 	nag_tree.store.getRootNode().appendChild([
 		{
 			text:'Unhandled Host Problems',
 			meta: 1,
+			expanded:false,
 			iconCls:'x-tree-problem',
 			parms:{
 				groupby:'',
@@ -501,6 +600,7 @@ Ext.onReady(function(){
 		{
 			text:'Unhandled Svc Problems',
 			meta: 1,
+			expanded:false,
 			iconCls:'x-tree-problem',
 			parms:{
 				groupby:'',
@@ -513,6 +613,7 @@ Ext.onReady(function(){
 		{
 			text:'Acknowledged',
 			meta: 1,
+			expanded:false,
 			iconCls:'x-tree-ack',
 			parms:{
 				groupby:'',
@@ -532,12 +633,14 @@ Ext.onReady(function(){
 		{
 			text: 'Host Groups',
 			allowDrag:false,
+			expanded:false,
 			meta: 1,
 			query: 'hostgroups'	
 		},
 		{
 			text: 'Services',
 			allowDrag:false,
+			expanded:false,
 			meta: 1,
 			parms:{
 				groupby:'description',
@@ -545,8 +648,22 @@ Ext.onReady(function(){
 				query: 'services',
 				status: 'statecount'	
 			}
+		},
+		{
+			text: 'Service Groups',
+			allowDrag:false,
+			expanded:false,
+			meta: 1,
+			parms:{
+				groupby:'name',
+				nodetext: 'name',
+				query: 'servicegroups',
+				status: 'services',
+				return_type: 'meta'	
+			}
 		}
 	]);
+
 	nagiosStatus();
 	
 	// Restore states
@@ -571,6 +688,10 @@ Ext.onReady(function(){
 		// }
 	}							
 	Ext.tip.QuickTipManager.init();
+	Ext.tip.QuickTipManager.register({
+		target: 'statusbox',
+		text: 'click to display detailed server info'
+	});
 	// Post app setup, do things that need all the components done.
 	
 	// execute for search in url
@@ -585,12 +706,16 @@ Ext.onReady(function(){
 		if(typeof q.search != 'undefined')
 		{
 			Ext.getCmp('search_input').setValue(q.search);
-			nagiosSearch();
+			Ext.defer(nagiosSearch,500);			
 		}
 		if(typeof q.host_query != 'undefined')
 		{
 			Ext.getCmp('search_input').setValue(q.host_query);
-			nagiosSearch();
+			var st=Ext.getCmp('search_type');
+			st.setText('Search Hosts:');
+			st.searchtype=('host');
+			st.setIconCls('host');									
+			Ext.defer(nagiosSearch,500);			
 			
 		}
 		if(typeof q.service_query != 'undefined')
@@ -600,7 +725,7 @@ Ext.onReady(function(){
 			st.setText('Search Services:');
 			st.searchtype=('service');
 			st.setIconCls('service');									
-			nagiosSearch();			
+			Ext.defer(nagiosSearch,500);			
 		}
 		if(typeof q.hostgroup_query != 'undefined')
 		{
@@ -609,15 +734,25 @@ Ext.onReady(function(){
 			st.setText('Search Hostgroups:');
 			st.searchtype=('hostgroup');
 			st.setIconCls('hostgroup');									
-			nagiosSearch();			
+			Ext.defer(nagiosSearch,500);			
+		}
+		if(typeof q.servicegroup_query != 'undefined')
+		{
+			Ext.getCmp('search_input').setValue(q.servicegroup_query);
+			var st=Ext.getCmp('search_type');
+			st.setText('Search Servicegroups:');
+			st.searchtype=('servicegroup');
+			st.setIconCls('servicegroup');									
+			Ext.defer(nagiosSearch,500);			
 		}
 	}
 	// Hack to recalculate the property grid
-	Ext.getCmp('nagiosdetaildata').getEl().setHeight(1800)
+	// Ext.getCmp('nagiosdetaildata').getEl().setHeight(1800)
 
 	restoreCustomViews();
 
 });
+
 
 </script>
 <div style='display:none'>
@@ -636,6 +771,8 @@ The new Nagios UI bring together severial different Nagios server data into one 
 <li>Servers: The total hosts and services being monitored by all available Nagios servers is displayed at the top of the screen. You can click on this to open a window that shows detailed data about the nagios servers.  From this window you can also take per-server actions, such as enabling or disabling notifications, checks, etc...
 </li>
 <li>Detail: Detail data can be seen at the bottom of the page. The bottom detail view is updated whenever and item is clicked on.  To the right on the bottom view, there's a 'Properties' slide out that will show all the raw data from the nagios server for that item.
+</li>
+<li>Live Log: the live log is a play/pause view into the nagios logs.  
 </li>
 <li>Custom Views:   custom views are there to save arbitrary groups of Hostgroups, hosts and services.  The currently used
 	custom views are saved across browser reloads (currently using cookies).   Custom views can be created by dragging
