@@ -181,7 +181,7 @@ Ext.regController('overview',{
 				}
 				if(selection.data.label=='Host Problems')
 				{
-					req_conf.params.nodetext='host';
+					req_conf.params.nodetext='name';
 					req_conf.params.groupby='';
 				}
 				this.main.getActiveItem().items.items[0].getStore().load(req_conf);
