@@ -14,7 +14,7 @@ limitations under the License.
 */
 
 
-NagUI.views.schedulewindow=Ext.extend(Ext.Panel, {
+nagios.views.schedulewindow=Ext.extend(Ext.Panel, {
 	layout: 'fit',
 	fullscreen: true,
 	scheduleTarget: undefined,
@@ -54,13 +54,13 @@ NagUI.views.schedulewindow=Ext.extend(Ext.Panel, {
 					{
 						fieldLabel: 'Date',
 						xtype: 'datepickerfield',
-						value: Ext.Date.add(new Date(),Date.HOUR,2),
+						value: new Date().add(Date.HOUR,2),
 						name: 'enddate'
 					},
 					{
 						fieldLabel: 'Time',
 						xtype:'timepickerfield',
-						value: Ext.Date.add(new Date(),Date.HOUR,2).format('H:i'),
+						value: new Date().add(Date.HOUR,2).format('H:i'),
 						name: 'endtime'
 					}
 				]
@@ -93,7 +93,7 @@ NagUI.views.schedulewindow=Ext.extend(Ext.Panel, {
 		]
 	},
 	initComponent: function(){
-		NagUI.views.serviceview.superclass.initComponent.apply(this,arguments);
+		nagios.views.serviceview.superclass.initComponent.apply(this,arguments);
 		this.addDocked({
 			dock: 'top',
 			xtype: 'toolbar',
@@ -139,5 +139,5 @@ NagUI.views.schedulewindow=Ext.extend(Ext.Panel, {
 		}
 	}
 });
-//Ext.reg('schedulewindow',NagUI.views.schedulewindow);
+Ext.reg('schedulewindow',nagios.views.schedulewindow);
 

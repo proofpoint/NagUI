@@ -13,8 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-Ext.define('overview',{
-	extend: 'Ext.app.Controller',
+Ext.regController('overview',{
 	id: 'overview',
 	list: function() {
 		this.main=this.render({
@@ -182,7 +181,7 @@ Ext.define('overview',{
 				}
 				if(selection.data.label=='Host Problems')
 				{
-					req_conf.params.nodetext='host';
+					req_conf.params.nodetext='name';
 					req_conf.params.groupby='';
 				}
 				this.main.getActiveItem().items.items[0].getStore().load(req_conf);
