@@ -3,6 +3,7 @@ VERSION HISTORY
 -upgarded to ext 4.2.1
 -added support for servicegroups
 -added livelog feature
+-added search permalink
 -misc fixes
 
 2.2.0
