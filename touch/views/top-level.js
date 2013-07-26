@@ -29,7 +29,7 @@ nagios.views.topview=Ext.extend(Ext.Panel, {
 					{
 						dock : 'top',
 						xtype: 'toolbar',
-						title: 'Nagios'
+						title: 'Nagui Touch'
 					 },
 					{
 						dock : 'top',
